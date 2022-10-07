@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include "trove.h"
 
 #define DEFAULT_LENGTH 4
 #define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < argc; i++)
     {
         printf("%s\n", argv[i]);
+        get_path(argv[i], trovefile);
     }
-
     exit(EXIT_SUCCESS);
 }

@@ -1,12 +1,11 @@
 #include "trove.h"
 
-void store_path(char *path) {
+void store_path(char *path, char *trovefile) {
   FILE *fp;
-  // TODO: Make sure trove-file is not hard coded.
-  fp = fopen("trove-file", "a");
+  fp = fopen(trovefile, "a");
 
   if(fp == NULL) {
-    //perror(path);
+    perror("fopen");
     exit(EXIT_FAILURE);
   }
   // Append path to file
@@ -14,12 +13,12 @@ void store_path(char *path) {
   fclose(fp);
 }
 
-void get_path(char *filename){
+void get_path(char *filename, char *trovefile){
     char buf[PATH_MAX]; 
     char *res = realpath(filename, buf);
     if (res != NULL) { 
-        printf("REAL PATH: %s \n", buf);
-        store_path(buf);
+        printf("REAL PATH: %s \n", res);
+        store_path(res, trovefile);
     } else {
         perror("realpath");
         exit(EXIT_FAILURE);
