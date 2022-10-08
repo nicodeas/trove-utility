@@ -192,7 +192,7 @@ void write_to_file() {
         while (links != NULL)
         {
             printf("%s\n", links->path);
-            fprintf(fp, "%s ", links->path);
+            fprintf(fp, "| %s ", links->path);
             links = links->next;
         }
 
