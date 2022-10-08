@@ -174,6 +174,35 @@ void parse_fileargs(char *file_arg)
     }
 }
 
+
+void write_to_file() {
+    FILE *fp;
+    fp = fopen("trove-file", "a");
+    while (trove != NULL)
+    {
+        
+        if(fp == NULL) {
+            perror("fopen");
+            exit(EXIT_FAILURE);
+        }
+        // Append path to file
+        fprintf(fp, "%s ", trove->word);
+        printf("==========%s==========\n", trove->word);
+        LINK *links = trove->link_to_paths;
+        while (links != NULL)
+        {
+            printf("%s\n", links->path);
+            fprintf(fp, "%s ", links->path);
+            links = links->next;
+        }
+
+        fprintf(fp, "\n");
+        trove = trove->next;
+    }
+    fclose(fp);
+
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -187,17 +216,18 @@ int main(int argc, char *argv[])
     {
         parse_fileargs(argv[i]);
     }
-    while (trove != NULL)
-    {
-        printf("==========%s==========\n", trove->word);
-        LINK *links = trove->link_to_paths;
-        while (links != NULL)
-        {
-            printf("%s\n", links->path);
-            links = links->next;
-        }
-        trove = trove->next;
-    }
+    write_to_file();
+    // while (trove != NULL)
+    // {
+    //     printf("==========%s==========\n", trove->word);
+    //     LINK *links = trove->link_to_paths;
+    //     while (links != NULL)
+    //     {
+    //         printf("%s\n", links->path);
+    //         links = links->next;
+    //     }
+    //     trove = trove->next;
+    // }
 
     exit(EXIT_SUCCESS);
 }
