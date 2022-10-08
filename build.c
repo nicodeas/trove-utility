@@ -1,6 +1,19 @@
 #include "trove.h"
 #include <string.h>
+#include <ctype.h>
 
+void convert_to_alpha(char *line)
+{
+    char *ptr = line;
+    while (*ptr != '\0')
+    {
+        if (!isalpha(*ptr))
+        {
+            *ptr = ' ';
+        }
+        ++ptr;
+    }
+}
 
 int is_file(const char *path)
 {
@@ -14,6 +27,7 @@ void read_file(char *file, int length) {
   size_t len = 0;
   ssize_t read;
   FILE *fp    = fopen(file, "r");
+  int count = 0;
   
 
 //  REPORT AN ERROR, TERMINATE, IF FILE CANNOT BE OPENED
@@ -21,20 +35,22 @@ void read_file(char *file, int length) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
-    const char delimiters[] = " \" , ! - . ' ;";
     printf("===== READING FILE ======\n");
     while((read = getline(&line, &len, fp)) != -1) {
        
-      char *token = strtok(line, delimiters);
+       convert_to_alpha(line);
+      char *token = strtok(line, " ");
       while (token != NULL)
       {
-          if(strlen(token) > length) {
-            printf("%lu %i\n", strlen(token), length);
+          if(strlen(token) >= length) {
             printf("%s\n", token);
+            count++;
           }
-          token = strtok(NULL, delimiters);
+          token = strtok(NULL, " ");
       }
     }
+    printf("====== File Stats =======\n");
+    printf("Words greater equal to %i: %i\n", length, count);
 
 
 }
