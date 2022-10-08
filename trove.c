@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < argc; i++)
     {
         printf("%s\n", argv[i]);
-        get_path(argv[i], trovefile);
+        get_path(argv[i], trovefile, length);
     }
     exit(EXIT_SUCCESS);
 }
