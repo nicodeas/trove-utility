@@ -45,6 +45,7 @@ HEAD_LINK *init_head(char *word)
     HEAD_LINK *new_head = malloc(sizeof(HEAD_LINK));
     new_head->word = strdup(word);
     new_head->next = trove;
+    new_head->link_to_paths = NULL;
     trove = new_head;
     return trove;
 }
