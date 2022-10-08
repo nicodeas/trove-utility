@@ -9,6 +9,53 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+typedef struct _link
+{
+    char *path;
+    struct _link *next;
+} LINK;
+
+typedef struct _head
+{
+    char *word;
+    struct _head *next;
+    LINK *link_to_paths;
+
+} HEAD_LINK;
+
+HEAD_LINK *trove;
+
+HEAD_LINK *find_word(char *word)
+{
+    HEAD_LINK *head = trove;
+    while (head != NULL)
+    {
+        if (strcmp(head->word, word) == 0)
+        {
+            return head;
+        }
+        head = head->next;
+    }
+    return NULL;
+}
+
+HEAD_LINK *init_head(char *word)
+{
+    // add to front of list
+    HEAD_LINK *new_head = malloc(sizeof(HEAD_LINK));
+    new_head->word = strdup(word);
+    new_head->next = trove;
+    trove = new_head;
+    return trove;
+}
+LINK *init_link(char *path)
+{
+    LINK *new_link = malloc(sizeof(LINK));
+    new_link->path = strdup(path);
+    new_link->next = NULL;
+    return new_link;
+}
+
 int word_length;
 
 void convert_to_alpha(char *line)
@@ -24,23 +71,37 @@ void convert_to_alpha(char *line)
     }
 }
 
-void process_line(char *line)
+void process_line(char *line, char *path)
 {
     char delimter[2] = {" "};
     char *token;
     token = strtok(line, delimter);
     while (token != NULL)
     {
-        if (strlen(token) == word_length)
+        if (strlen(token) >= word_length)
         {
             // Do something...
-            printf("%s\n", token);
+            HEAD_LINK *head = find_word(token);
+            if (head == NULL)
+            {
+                head = init_head(token);
+            }
+            if (head->link_to_paths == NULL)
+            {
+                head->link_to_paths = init_link(path);
+            }
+            else
+            {
+                LINK *path_link = init_link(path);
+                path_link->next = head->link_to_paths;
+                head->link_to_paths = path_link;
+            }
         }
         token = strtok(NULL, delimter);
     }
 }
 
-void parse_file(char *fname)
+void parse_file(char *fname, char *path)
 {
     FILE *fp = fopen(fname, "r");
     char line[BUFSIZ];
@@ -52,7 +113,7 @@ void parse_file(char *fname)
     while (fgets(line, BUFSIZ, fp) != NULL)
     {
         convert_to_alpha(line);
-        process_line(line);
+        process_line(line, path);
     }
 }
 
@@ -90,7 +151,7 @@ void parse_fileargs(char *file_arg)
     }
     else
     {
-        parse_file(file_arg);
+        parse_file(file_arg, base_path);
         // printf("%s\n", file_arg);
     }
 }
@@ -103,9 +164,16 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     word_length = atoi(argv[1]);
+    // init_trove();
     for (int i = 2; i < argc; i++)
     {
         parse_fileargs(argv[i]);
     }
+    while (trove != NULL)
+    {
+        printf("%s\n", trove->word);
+        trove = trove->next;
+    }
+
     exit(EXIT_SUCCESS);
 }
