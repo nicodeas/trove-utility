@@ -3,19 +3,38 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <ctype.h>
 
-typedef struct _link
+int word_length;
+
+void convert_to_alpha(char *line)
 {
-    char *paths;
-    struct _list *link;
+    char *ptr = line;
+    while (*ptr != '\0')
+    {
+        if (!isalpha(*ptr))
+        {
+            *ptr = ' ';
+        }
+        ++ptr;
+    }
+}
 
-} LINK;
-
-struct words
+void process_line(char *line)
 {
-    char *word;
-    struct _link *start_of_list;
-};
+    char delimter[2] = {" "};
+    char *token;
+    token = strtok(line, delimter);
+    while (token != NULL)
+    {
+        if (strlen(token) == word_length)
+        {
+            // Do something...
+            printf("%s\n", token);
+        }
+        token = strtok(NULL, delimter);
+    }
+}
 
 void parse_file(char *fname)
 {
@@ -28,19 +47,20 @@ void parse_file(char *fname)
     }
     while (fgets(line, BUFSIZ, fp) != NULL)
     {
-        printf("%s\n", line);
+        convert_to_alpha(line);
+        process_line(line);
     }
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        printf("argument error\n");
+        printf("%s: [filename] [wordlength]\n", argv[0]);
         exit(EXIT_FAILURE);
     }
     char *fname = argv[1];
-    printf("%s\n", fname);
+    word_length = atoi(argv[2]);
     parse_file(fname);
-    return 0;
+    exit(EXIT_SUCCESS);
 }
