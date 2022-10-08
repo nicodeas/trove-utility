@@ -4,6 +4,11 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "trove.h"
+#include <limits.h> /* PATH_MAX */
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 #define DEFAULT_LENGTH 4
 #define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
@@ -18,6 +23,43 @@ void usage(char *name, char error)
         break;
     }
     exit(EXIT_FAILURE);
+}
+void parse_fileargs(char *file_arg)
+{
+    char base_path[PATH_MAX];
+    char path[PATH_MAX];
+    struct stat file_stat;
+    realpath(file_arg, base_path);
+    stat(base_path, &file_stat);
+    if (S_ISDIR(file_stat.st_mode))
+    {
+        printf("==========Opening directory: %s ==========\n", file_arg);
+        DIR *dirp;
+        struct dirent *dp;
+        dirp = opendir(file_arg);
+        if (dirp == NULL)
+        {
+            perror(file_arg);
+            exit(EXIT_FAILURE);
+        }
+        while ((dp = readdir(dirp)) != NULL)
+        {
+            printf("%s\n", dp->d_name);
+            if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, ".."))
+            {
+                strcpy(path, base_path);
+                strcat(path, "/");
+                strcat(path, dp->d_name);
+                parse_fileargs(path);
+            }
+        }
+        printf("==========Closing directory: %s ==========\n", file_arg);
+        closedir(dirp);
+    }
+    else
+    {
+        printf("%s\n", file_arg);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -64,8 +106,7 @@ int main(int argc, char *argv[])
     printf("=====Files to include=====\n");
     for (int i = 0; i < argc; i++)
     {
-        printf("%s\n", argv[i]);
-        get_path(argv[i], trovefile, length);
+        parse_fileargs(argv[i]);
     }
     exit(EXIT_SUCCESS);
 }
