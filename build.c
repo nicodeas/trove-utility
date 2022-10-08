@@ -1,4 +1,5 @@
 #include "trove.h"
+#include <string.h>
 
 
 int is_file(const char *path)
@@ -8,7 +9,7 @@ int is_file(const char *path)
     return S_ISREG(path_stat.st_mode);
 }
 
-void read_file(char *file) {
+void read_file(char *file, int length) {
   char * line = NULL;
   size_t len = 0;
   ssize_t read;
@@ -20,9 +21,19 @@ void read_file(char *file) {
         perror("fopen");
         exit(EXIT_FAILURE);
     }
+    const char delimiters[] = " \" , ! - . ' ;";
     printf("===== READING FILE ======\n");
     while((read = getline(&line, &len, fp)) != -1) {
-       printf("%s", line);
+       
+      char *token = strtok(line, delimiters);
+      while (token != NULL)
+      {
+          if(strlen(token) > length) {
+            printf("%lu %i\n", strlen(token), length);
+            printf("%s\n", token);
+          }
+          token = strtok(NULL, delimiters);
+      }
     }
 
 
@@ -48,7 +59,7 @@ void get_path(char *filename, char *trovefile, int length){
         printf("REAL PATH: %s \n", res);
         // Its a file
         if(is_file(res) == 1) {
-          read_file(res);
+          read_file(res, length);
           //store_path(res, trovefile);
 
         }
