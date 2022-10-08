@@ -71,6 +71,20 @@ void convert_to_alpha(char *line)
     }
 }
 
+bool link_exists(HEAD_LINK *head, char *path)
+{
+    LINK *links = head->link_to_paths;
+    while (links != NULL)
+    {
+        if (strcmp(links->path, path) == 0)
+        {
+            return true;
+        }
+        links = links->next;
+    }
+    return false;
+}
+
 void process_line(char *line, char *path)
 {
     char delimter[2] = {" "};
@@ -92,9 +106,12 @@ void process_line(char *line, char *path)
             }
             else
             {
-                LINK *path_link = init_link(path);
-                path_link->next = head->link_to_paths;
-                head->link_to_paths = path_link;
+                if (!link_exists(head, path))
+                {
+                    LINK *path_link = init_link(path);
+                    path_link->next = head->link_to_paths;
+                    head->link_to_paths = path_link;
+                }
             }
         }
         token = strtok(NULL, delimter);
@@ -171,7 +188,13 @@ int main(int argc, char *argv[])
     }
     while (trove != NULL)
     {
-        printf("%s\n", trove->word);
+        printf("==========%s==========\n", trove->word);
+        LINK *links = trove->link_to_paths;
+        while (links != NULL)
+        {
+            printf("%s\n", links->path);
+            links = links->next;
+        }
         trove = trove->next;
     }
 
