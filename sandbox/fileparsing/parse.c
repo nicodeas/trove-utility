@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 typedef struct _link
 {
@@ -198,6 +199,8 @@ int main(int argc, char *argv[])
     {
         parse_fileargs(argv[i]);
     }
+    int file_desc = open("dup.txt", O_WRONLY | O_APPEND);
+    dup2(file_desc, 1);
 
     // write to file instead of printing in future
     while (trove != NULL)
