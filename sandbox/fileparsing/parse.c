@@ -87,9 +87,14 @@ bool link_exists(HEAD_LINK *head, char *path)
 }
 void free_headlink(HEAD_LINK *head)
 {
+    // free paths separately
     free(head->word);
-    free(head->link_to_paths);
     free(head);
+}
+void free_path(LINK *path_link)
+{
+    free(path_link->path);
+    free(path_link);
 }
 
 void process_line(char *line, char *path)
@@ -193,6 +198,8 @@ int main(int argc, char *argv[])
     {
         parse_fileargs(argv[i]);
     }
+
+    // write to file instead of printing in future
     while (trove != NULL)
     {
         HEAD_LINK *prev_head = trove;
@@ -200,8 +207,10 @@ int main(int argc, char *argv[])
         LINK *links = trove->link_to_paths;
         while (links != NULL)
         {
+            LINK *prev = links;
             printf("%s\n", links->path);
             links = links->next;
+            free_path(prev);
         }
         trove = trove->next;
         free_headlink(prev_head);
