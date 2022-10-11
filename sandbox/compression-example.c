@@ -7,14 +7,14 @@
 #include <string.h>
 
 #include <getopt.h>
-#define OPTLIST "c:u:" // c: compress file, u: uncompress file
+#define OPTLIST "c:u:r:" // c: compress file, u: uncompress file, r: read uncompressed file
 
 void usage(char *name, char error)
 {
     switch (error)
     {
     case '?':
-        printf("Usage: %s [-c | -u] filename \n", name);
+        printf("Usage: %s [-c | -u | -r] filename \n", name);
         break;
     }
     exit(EXIT_FAILURE);
@@ -65,13 +65,20 @@ void uncompress_file(char *file) {
       printf("Successful!\n");
       break;
   }
+}
 
+
+void read_compressed_file(char *file) {
+  printf("Reading compressed file\n");
+  file = strcat(file, ".gz");
+  execlp("gzcat", "gzcat", file, NULL);
 }
 
 int main(int argc, char *argv[]) {
 
   bool cflag = false;
   bool uflag = false;
+  bool rflag = false;
   int opt;
   char *file = NULL;
 
@@ -87,6 +94,10 @@ int main(int argc, char *argv[]) {
             uflag = true;
             file = optarg;
             break;
+          case 'r':
+            rflag = true;
+            file = optarg;
+            break;
           case '?':
             usage(argv[0], '?');
             break;
@@ -98,7 +109,10 @@ int main(int argc, char *argv[]) {
       compress_file(file);
 
     }
-    if(uflag) {
+    else if(uflag) {
       uncompress_file(file);
+    }
+    else if(rflag) {
+      read_compressed_file(file);
     }
 }
