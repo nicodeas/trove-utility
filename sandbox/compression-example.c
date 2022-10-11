@@ -29,8 +29,10 @@ void compress_file(char *file) {
       break;
     case 0: 
       // Child process
+      // execl("/usr/bin/gzip","/usr/bin/gzip", file, NULL);
       // execlp("gzip", "gzip", "-k", file, NULL); //  keep the orig file
-      execlp("gzip", "gzip", file, NULL);
+      execlp("gzip", "gzip", file, NULL); // Dont need to include the full path - gets from $PATH vars
+      
       printf("This shouldn't print\n");
       break;
     case 1:
@@ -52,7 +54,9 @@ void uncompress_file(char *file) {
       break;
     case 0: 
       // Child process
-      execlp("gzip", "gzip", "-d", file, NULL);
+      // execl("/usr/bin/gzip","/usr/bin/gzip", "-d", file, NULL);
+      execlp("gzip", "gzip", "-d", file, NULL); // Don't need to include the full path
+      
       printf("This shouldn't print\n");
       break;
     case 1:
