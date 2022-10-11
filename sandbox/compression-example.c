@@ -9,6 +9,11 @@
 #include <getopt.h>
 #define OPTLIST "c:u:r:" // c: compress file, u: uncompress file, r: read uncompressed file
 
+
+#define WRITE 1
+#define READ 0
+
+
 void usage(char *name, char error)
 {
     switch (error)
@@ -70,8 +75,39 @@ void uncompress_file(char *file) {
 
 void read_compressed_file(char *file) {
   printf("Reading compressed file\n");
-  file = strcat(file, ".gz");
-  execlp("gzcat", "gzcat", file, NULL);
+  int fd[2];
+  pid_t pid;
+  char buf[4096];
+
+  // int redirect_fd = open("redirected", O_CREAT | O_TRUNC | O_WRONLY);
+  // dup2(redirect_fd, STDOUT_FILENO);
+  // execlp("gzcat", "gzcat", file, NULL);
+  // close(redirect_fd);
+  if (pipe(fd)==-1) {
+    exit(EXIT_FAILURE);
+  }
+  if ((pid = fork()) == -1) {
+    exit(EXIT_FAILURE);
+  }
+
+  if(pid == 0) {
+
+    dup2 (fd[1], STDOUT_FILENO);
+    close(fd[0]);
+    close(fd[1]);
+    execlp("gzcat", "gzcat", file, (char *)0);
+    exit(EXIT_FAILURE);
+
+  } else {
+    close(fd[1]);
+    ssize_t nbytes;
+    while((nbytes = read(fd[0], buf, sizeof(buf))) >0) {
+      printf("%s\n", buf);
+    }
+    wait(NULL);
+
+  }
+
 }
 
 int main(int argc, char *argv[]) {
