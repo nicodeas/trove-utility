@@ -15,7 +15,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define HASHTABLE_SIZE 997
+// #define HASHTABLE_SIZE 98317
+// #define HASHTABLE_SIZE 393241
+// #define HASHTABLE_SIZE 786433
+#define HASHTABLE_SIZE 1572869
+
 int word_length;
 
 typedef struct _link
