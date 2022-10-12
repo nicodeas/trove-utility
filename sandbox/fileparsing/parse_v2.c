@@ -213,25 +213,40 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     word_length = atoi(argv[1]);
-    HASHTABLE *hashtable = hashtable_new();
-    for (int i = 2; i < argc; i++)
+    int output_fd = open("./trove-data.txt", O_WRONLY);
+    int terminal_output_copy = dup(STDOUT_FILENO);
+
+    switch (fork())
     {
-        parse_fileargs(argv[i], hashtable);
-    }
-    for (int i = 0; i < HASHTABLE_SIZE; i++)
-    {
-        while (hashtable[i] != NULL)
+    case 0:
+        dup2(output_fd, STDOUT_FILENO);
+        HASHTABLE *hashtable = hashtable_new();
+        for (int i = 2; i < argc; i++)
         {
-            printf("#%s\n", hashtable[i]->word);
-            LINK *links = hashtable[i]->link_to_paths;
-            while (links != NULL)
-            {
-                printf("%s\n", links->path);
-                links = links->next;
-            }
-            hashtable[i] = hashtable[i]->next;
+            parse_fileargs(argv[i], hashtable);
         }
+        for (int i = 0; i < HASHTABLE_SIZE; i++)
+        {
+            while (hashtable[i] != NULL)
+            {
+                printf("#%s\n", hashtable[i]->word);
+                LINK *links = hashtable[i]->link_to_paths;
+                while (links != NULL)
+                {
+                    printf("%s\n", links->path);
+                    links = links->next;
+                }
+                hashtable[i] = hashtable[i]->next;
+            }
+        }
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        wait(NULL);
+        close(output_fd);
+        dup2(terminal_output_copy, STDOUT_FILENO);
     }
+    printf("parsing complete!\n");
 
     return 0;
 }
