@@ -37,17 +37,13 @@ typedef HEAD_LINK *HASHTABLE;
 HEAD_LINK *head_link_find(HEAD_LINK *head, char *wanted)
 {
     HEAD_LINK *cpy = head;
-    // printf("cpy string : %s", cpy->word);
     if (cpy != NULL)
     {
-        // printf("cpystr: %s", cpy->word);
     }
-    // printf("finding head with %s\n", wanted);
     while (cpy != NULL)
     {
         if (strcmp(cpy->word, wanted) == 0)
         {
-            // printf("head found\n");
             return cpy;
         }
         cpy = cpy->next;
@@ -90,7 +86,6 @@ bool path_link_find(LINK *link, char *wanted_path)
 }
 uint32_t hash_string(char *string)
 {
-    // char *cpy = string;
     uint32_t hash = 0;
 
     while (*string != '\0')
@@ -98,7 +93,6 @@ uint32_t hash_string(char *string)
         hash = hash * 33 + *string;
         ++string;
     }
-    // printf("string: %s hash: %i\n", cpy, hash);
     return hash;
 }
 HASHTABLE *hashtable_new(void)
@@ -109,19 +103,15 @@ HASHTABLE *hashtable_new(void)
 }
 HEAD_LINK *hashtable_add(HASHTABLE *hashtable, char *string)
 {
-    printf("adding string: %s\n", string);
     uint32_t h = hash_string(string) % HASHTABLE_SIZE; // choose list
 
     hashtable[h] = head_link_add(hashtable[h], string);
-    printf("hashtable added: %s\n", hashtable[h]->word);
     return hashtable[h];
 }
 HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string)
 {
-    // printf("finding starting\n");
     char *cpy = string;
     uint32_t h = hash_string(cpy) % HASHTABLE_SIZE; // choose list
-    printf("string: %s list number: %i\n", cpy, h);
     return head_link_find(hashtable[h], string);
 }
 
@@ -147,26 +137,19 @@ void process_line(char *line, char *path, HASHTABLE *hashtable)
     {
         if (strlen(token) >= word_length)
         {
-            // printf("if1\n");
-            // printf("%s\n", token);
+
             HEAD_LINK *head = hashtable_find(hashtable, token);
-            // printf("find success\n");
             if (head == NULL)
             {
-                // printf("if2\n");
                 head = hashtable_add(hashtable, token);
             }
 
-            else
+            LINK *ltp_cpy = head->link_to_paths;
+            if (!path_link_find(ltp_cpy, path))
             {
-                // printf("else \n");
-                LINK *ltp_cpy = head->link_to_paths;
-                if (!path_link_find(ltp_cpy, path))
-                {
-                    LINK *path_link = new_link(path);
-                    path_link->next = head->link_to_paths;
-                    head->link_to_paths = path_link;
-                }
+                LINK *path_link = new_link(path);
+                path_link->next = head->link_to_paths;
+                head->link_to_paths = path_link;
             }
         }
         token = strtok(NULL, delimter);
@@ -237,19 +220,10 @@ int main(int argc, char *argv[])
     }
     for (int i = 0; i < HASHTABLE_SIZE; i++)
     {
-        // if (hashtable[i] != NULL)
-        // {
-
-        //     printf("curr hastalbe lik%i\n", i);
-        // }
         while (hashtable[i] != NULL)
         {
             printf("#%s\n", hashtable[i]->word);
             LINK *links = hashtable[i]->link_to_paths;
-            if (links != NULL)
-            {
-                printf("link not null\n");
-            }
             while (links != NULL)
             {
                 printf("%s\n", links->path);
