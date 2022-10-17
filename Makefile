@@ -1,6 +1,6 @@
 CC 		 	= cc -std=c11
 CFLAGS 	= -Wall -Werror
-OBJFILES = trove.o build.o remove.o update.o read.o
+OBJFILES = trove.o build.o remove.o update.o find.o
 HEADERS = trove.h
 TARGET = trove
 
@@ -23,8 +23,8 @@ update.o: update.c update.h
 remove.o: remove.c remove.h
 			$(CC) $(CFLAGS) -c remove.c
 
-read.o: read.c read.h
-			$(CC) $(CFLAGS) -c read.c
+find.o: find.c find.h
+			$(CC) $(CFLAGS) -c find.c
 
 clean:
 	rm -f $(OBJFILES) $(TARGET)

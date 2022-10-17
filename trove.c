@@ -12,7 +12,7 @@
 
 #include "build.h"
 #include "update.h"
-#include "read.h"
+#include "find.h"
 #include "remove.h"
 
 
@@ -85,8 +85,9 @@ int main(int argc, char *argv[])
         remove_file();
     }
     else {
-        // Calls the function on read.c
-        read_file();
+        FILE *trove = get_file(trovefile);
+        printf("WORD %s\n", argv[0]);
+        find_word(trove, argv[0]);
     }
     exit(EXIT_SUCCESS);
 }
