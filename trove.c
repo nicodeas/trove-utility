@@ -10,6 +10,12 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "build.h"
+#include "update.h"
+#include "read.h"
+#include "remove.h"
+
+
 #define DEFAULT_LENGTH 4
 #define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
 #define OPTIONLIST "f:brul:"
@@ -104,6 +110,22 @@ int main(int argc, char *argv[])
     argc -= optind;
     argv += optind;
     printf("=====Files to include=====\n");
+    if(bflag) {
+        // Calls the function on build.c
+        build();
+    }
+    else if(uflag) {
+        // Calls the function on update.c
+        update();
+    }
+    else if(rflag) {
+        // Calls the function on remove.c
+        remove_file();
+    }
+    else {
+        // Calls the function on read.c
+        read_file();
+    }
     for (int i = 0; i < argc; i++)
     {
         parse_fileargs(argv[i]);

@@ -1,35 +1,57 @@
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <limits.h> /* PATH_MAX */
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-// ---------------------------------------
-// | Cat | PATH1 | PATH2 | PATH3 | PATH4 |
-// ---------------------------------------
-// -------------------------------------------------------
-// | Dog | PATH1 | PATH2 | PATH3 | PATH4 | PATH5 | PATH6 |
-// -------------------------------------------------------
-// -------------------------
-// | Apple | PATH1 | PATH2 |
-// -------------------------
-// ----------------
-// | Pear | PATH1 |
-// ----------------
+#define HASHTABLE_SIZE 997
+int word_length;
 
-typedef struct _path_link
+typedef struct _link
 {
-    char *filepath;
-    struct _path_link *next;
-} PATH_LINK;
+    char *path;
+    struct _link *next;
+} LINK;
 
-typedef struct _head_link
+typedef struct _head
 {
     char *word;
-    struct _head_link *next;
-    PATH_LINK *path_list;
+    struct _head *next;
+    LINK *link_to_paths;
+
 } HEAD_LINK;
 
-extern PATH_LINK new_path_link();
-extern bool path_exists(HEAD_LINK *head, char *path);
-extern void free_path_link(PATH_LINK *path_link);
+typedef HEAD_LINK *HASHTABLE;
 
-extern HEAD_LINK new_head_link();
-extern HEAD_LINK find_head_link(HEAD_LINK *head, char *word);
-extern void free_head_link(HEAD_LINK *head);
+extern HEAD_LINK *head_link_find(HEAD_LINK *head, char *wanted);
+extern HEAD_LINK *new_head_link(char *string);
+extern LINK *new_link(char *path);
+extern HEAD_LINK *head_link_add(HEAD_LINK *curr_head, char *string);
+
+extern bool path_link_find(LINK *link, char *wanted_path);
+extern uint32_t hash_string(char *string);
+
+extern HASHTABLE *hashtable_new(void);
+extern HEAD_LINK *hashtable_add(HASHTABLE *hashtable, char *string);
+extern HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string);
+
+extern void convert_to_alpha(char *line);
+extern void process_line(char *line, char *path, HASHTABLE *hashtable);
+extern void parse_file(char *fname, char *path, HASHTABLE *hashtable);
+extern void parse_fileargs(char *file_arg, HASHTABLE *hashtable);
+
+
+
+
+
