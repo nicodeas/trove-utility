@@ -182,7 +182,6 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-// TODO: Create the file on desk -- only seems to print it
 int build_file(char *file_list[], char *filename, int word_length, int file_count)
 {
     int output_fd = open(filename, O_WRONLY);
@@ -214,11 +213,13 @@ int build_file(char *file_list[], char *filename, int word_length, int file_coun
                 hashtable[i] = hashtable[i]->next;
             }
         }
-         execlp("gzip", "gzip", output_fd, NULL);
+        // Compress the file
+        execlp("gzip", "gzip", filename, NULL);
         exit(EXIT_SUCCESS);
         break;
     default:
         wait(NULL);
+        fclose(fp);
         close(output_fd);
         dup2(terminal_output_copy, STDOUT_FILENO);
     }
