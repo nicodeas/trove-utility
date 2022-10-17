@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 typedef struct _link
 {
@@ -85,6 +86,17 @@ bool link_exists(HEAD_LINK *head, char *path)
     }
     return false;
 }
+void free_headlink(HEAD_LINK *head)
+{
+    // free paths separately
+    free(head->word);
+    free(head);
+}
+void free_path(LINK *path_link)
+{
+    free(path_link->path);
+    free(path_link);
+}
 
 void process_line(char *line, char *path)
 {
@@ -144,7 +156,6 @@ void parse_fileargs(char *file_arg)
     stat(base_path, &file_stat);
     if (S_ISDIR(file_stat.st_mode))
     {
-        // printf("==========Opening directory: %s ==========\n", file_arg);
         DIR *dirp;
         struct dirent *dp;
         dirp = opendir(file_arg);
@@ -155,7 +166,6 @@ void parse_fileargs(char *file_arg)
         }
         while ((dp = readdir(dirp)) != NULL)
         {
-            // printf("%s\n", dp->d_name);
             if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, ".."))
             {
                 strcpy(path, base_path);
@@ -164,13 +174,11 @@ void parse_fileargs(char *file_arg)
                 parse_fileargs(path);
             }
         }
-        // printf("==========Closing directory: %s ==========\n", file_arg);
         closedir(dirp);
     }
     else
     {
         parse_file(file_arg, base_path);
-        // printf("%s\n", file_arg);
     }
 }
 
@@ -211,23 +219,39 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     word_length = atoi(argv[1]);
-    // init_trove();
     for (int i = 2; i < argc; i++)
     {
         parse_fileargs(argv[i]);
     }
-    write_to_file();
-    // while (trove != NULL)
-    // {
-    //     printf("==========%s==========\n", trove->word);
-    //     LINK *links = trove->link_to_paths;
-    //     while (links != NULL)
-    //     {
-    //         printf("%s\n", links->path);
-    //         links = links->next;
-    //     }
-    //     trove = trove->next;
-    // }
-
+    int output_fd = open("./trove-data.txt", O_WRONLY);
+    int terminal_output_copy = dup(STDOUT_FILENO);
+    switch (fork())
+    {
+    case 0:
+        dup2(output_fd, STDOUT_FILENO);
+        while (trove != NULL)
+        {
+            HEAD_LINK *prev_head = trove;
+            printf("#%s\n", trove->word);
+            LINK *links = trove->link_to_paths;
+            while (links != NULL)
+            {
+                LINK *prev = links;
+                printf("%s\n", links->path);
+                links = links->next;
+                free_path(prev);
+            }
+            trove = trove->next;
+            free_headlink(prev_head);
+        }
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        wait(NULL);
+        close(output_fd);
+        dup2(terminal_output_copy, STDOUT_FILENO);
+        break;
+    }
+    printf("Parsing Complete!\n");
     exit(EXIT_SUCCESS);
 }

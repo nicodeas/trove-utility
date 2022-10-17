@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <stdbool.h>
 
 // ---------------------------------------
@@ -31,6 +28,7 @@ typedef struct _head_link
 
 extern PATH_LINK new_path_link();
 extern bool path_exists(HEAD_LINK *head, char *path);
+extern void free_path_link(PATH_LINK *path_link);
 
 extern HEAD_LINK new_head_link();
 extern HEAD_LINK find_head_link(HEAD_LINK *head, char *word);
