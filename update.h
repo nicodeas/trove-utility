@@ -1,1 +1,1 @@
-extern void update();
+extern void update_file();

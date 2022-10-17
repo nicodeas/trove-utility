@@ -3,6 +3,6 @@
 
 #include "update.h"
 
-void update() {
+void update_file() {
   printf("UPDATING NOW\n");
 }

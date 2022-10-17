@@ -30,43 +30,6 @@ void usage(char *name, char error)
     }
     exit(EXIT_FAILURE);
 }
-void parse_fileargs(char *file_arg)
-{
-    char base_path[PATH_MAX];
-    char path[PATH_MAX];
-    struct stat file_stat;
-    realpath(file_arg, base_path);
-    stat(base_path, &file_stat);
-    if (S_ISDIR(file_stat.st_mode))
-    {
-        printf("==========Opening directory: %s ==========\n", file_arg);
-        DIR *dirp;
-        struct dirent *dp;
-        dirp = opendir(file_arg);
-        if (dirp == NULL)
-        {
-            perror(file_arg);
-            exit(EXIT_FAILURE);
-        }
-        while ((dp = readdir(dirp)) != NULL)
-        {
-            printf("%s\n", dp->d_name);
-            if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, ".."))
-            {
-                strcpy(path, base_path);
-                strcat(path, "/");
-                strcat(path, dp->d_name);
-                parse_fileargs(path);
-            }
-        }
-        printf("==========Closing directory: %s ==========\n", file_arg);
-        closedir(dirp);
-    }
-    else
-    {
-        printf("%s\n", file_arg);
-    }
-}
 
 int main(int argc, char *argv[])
 {
@@ -109,14 +72,13 @@ int main(int argc, char *argv[])
     printf("=====End of Arguments=====\n");
     argc -= optind;
     argv += optind;
-    printf("=====Files to include=====\n");
     if(bflag) {
         // Calls the function on build.c
-        build();
+        build_file(argv, trovefile, length, argc);
     }
     else if(uflag) {
         // Calls the function on update.c
-        update();
+        update_file();
     }
     else if(rflag) {
         // Calls the function on remove.c
@@ -125,10 +87,6 @@ int main(int argc, char *argv[])
     else {
         // Calls the function on read.c
         read_file();
-    }
-    for (int i = 0; i < argc; i++)
-    {
-        parse_fileargs(argv[i]);
     }
     exit(EXIT_SUCCESS);
 }
