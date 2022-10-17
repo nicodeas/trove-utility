@@ -214,7 +214,7 @@ int build_file(char *file_list[], char *filename, int word_length, int file_coun
             }
         }
         // Compress the file
-        execlp("gzip", "gzip", filename, NULL);
+        execl("/usr/bin/gzip", "gzip", filename, NULL);
         exit(EXIT_SUCCESS);
         break;
     default:
