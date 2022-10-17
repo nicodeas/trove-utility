@@ -187,6 +187,7 @@ int build_file(char *file_list[], char *filename, int word_length, int file_coun
 {
     int output_fd = open(filename, O_WRONLY);
     int terminal_output_copy = dup(STDOUT_FILENO);
+    FILE *fp = fopen(filename, "w");
 
     switch (fork())
     {
@@ -202,10 +203,12 @@ int build_file(char *file_list[], char *filename, int word_length, int file_coun
             while (hashtable[i] != NULL)
             {
                 printf("#%s\n", hashtable[i]->word);
+                fprintf(fp, "#%s\n", hashtable[i]->word); // Write word to file
                 LINK *links = hashtable[i]->link_to_paths;
                 while (links != NULL)
                 {
                     printf("%s\n", links->path);
+                    fprintf(fp, "%s\n", links->path); // Write path to file
                     links = links->next;
                 }
                 hashtable[i] = hashtable[i]->next;
