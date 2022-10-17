@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     }
     else {
         FILE *trove = get_file(trovefile);
-        printf("WORD %s\n", argv[0]);
+        printf("Searching for: %s \n", argv[0]);
         find_word(trove, argv[0]);
     }
     exit(EXIT_SUCCESS);
