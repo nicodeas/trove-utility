@@ -96,12 +96,11 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-int build_file(char *file_list[], char *filename, int length, int file_count)
+int build_file(char *file_list[], char *filename, int file_count)
 {
     int output_fd = open(filename, O_WRONLY);
     int terminal_output_copy = dup(STDOUT_FILENO);
     FILE *fp = fopen(filename, "w");
-    word_length = length;
 
     switch (fork())
     {

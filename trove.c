@@ -12,8 +12,7 @@
 #include "remove.h"
 
 
-#define DEFAULT_LENGTH 4
-#define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
+
 #define OPTIONLIST "f:brul:"
 
 void usage(char *name, char error)
@@ -30,10 +29,10 @@ void usage(char *name, char error)
 int main(int argc, char *argv[])
 {
     char *trovefile = NULL;
-    int opt, length;
+    int opt;
     bool bflag, rflag, uflag;
 
-    length = DEFAULT_LENGTH;
+    word_length = DEFAULT_LENGTH;
     trovefile = DEFAULT_TROVE_FILE_PATH;
 
     while ((opt = getopt(argc, argv, OPTIONLIST)) != -1)
@@ -53,7 +52,7 @@ int main(int argc, char *argv[])
             uflag = true;
             break;
         case 'l':
-            length = atoi(optarg);
+            word_length = atoi(optarg);
             break;
         case '?':
             usage(argv[0], '?');
@@ -64,13 +63,13 @@ int main(int argc, char *argv[])
     printf("b flag: %s\n", bflag ? "true" : "false");
     printf("r flag: %s\n", rflag ? "true" : "false");
     printf("u flag: %s\n", uflag ? "true" : "false");
-    printf("Length: %d\n", length);
+    printf("Length: %d\n", word_length);
     printf("=====End of Arguments=====\n");
     argc -= optind;
     argv += optind;
     if(bflag) {
         // Calls the function on build.c
-        build_file(argv, trovefile, length, argc);
+        build_file(argv, trovefile, argc);
     }
     else if(uflag) {
         // Calls the function on update.c
