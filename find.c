@@ -5,11 +5,12 @@
 void find_word(char *trovefile, char *word)
 {
     int fd[2];
-    if (pipe(fd))
+    if (pipe(fd) == -1)
     {
         printf("Error creating pipe\n");
         exit(EXIT_FAILURE);
     };
+
     int pid = fork();
     if (pid == -1)
     {
@@ -27,7 +28,8 @@ void find_word(char *trovefile, char *word)
     FILE *stream;
     stream = fdopen(fd[0], "r");
     char line[BUFSIZ];
-    bool found = false;
+    bool word_found = false;
+
     while (fgets(line, BUFSIZ, stream) != NULL)
     {
         char *curr = line;
@@ -35,17 +37,17 @@ void find_word(char *trovefile, char *word)
         curr++;
         if (*line == '#')
         {
-            if (found)
+            if (word_found)
             {
                 break;
             }
             if (strcmp(word, curr) == 0)
             {
-                found = true;
+                word_found = true;
                 continue;
             }
         }
-        if (found)
+        if (word_found)
         {
             printf("%s\n", line);
         }
