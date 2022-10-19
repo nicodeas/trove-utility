@@ -82,8 +82,7 @@ int main(int argc, char *argv[])
     {
         // Calls the function on remove.c
         // FILE *trove = get_file(trovefile);
-        // remove_file(argv, trove, argc);
-        ;
+        remove_file(trovefile, argv, argc);
     }
     else
     {

@@ -2,4 +2,4 @@
 #include <stdio.h>
 #include <string.h>
 
-extern void remove_file(char *file_list[], FILE *trovefile, int file_count);
+extern void remove_file(char *trovefile, char *paths[], int path_count);
