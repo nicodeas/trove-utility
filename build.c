@@ -96,48 +96,58 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-int build_file(char *file_list[], char *filename, int file_count)
+void compress_file(char *filename)
 {
-    int output_fd = open(filename, O_WRONLY);
-    int terminal_output_copy = dup(STDOUT_FILENO);
-    FILE *fp = fopen(filename, "w");
-
+    // Do we want this function else where as we are probably going to use this
+    // In update/ remove functions as well?
     switch (fork())
     {
+    case -1:
+        // TODO
+        // Change this later ...
+        // Could we use errno/ perror?
+        printf("Fork failed !!\n");
+        break;
     case 0:
-        dup2(output_fd, STDOUT_FILENO);
-        HASHTABLE *hashtable = hashtable_new();
-        for (int i = 0; i < file_count; i++)
-        {
-            parse_fileargs(file_list[i], hashtable);
-        }
-        for (int i = 0; i < HASHTABLE_SIZE; i++)
-        {
-            while (hashtable[i] != NULL)
-            {
-                printf("#%s\n", hashtable[i]->word);
-                fprintf(fp, "#%s\n", hashtable[i]->word); // Write word to file
-                LINK *links = hashtable[i]->link_to_paths;
-                while (links != NULL)
-                {
-                    printf("%s\n", links->path);
-                    fprintf(fp, "%s\n", links->path); // Write path to file
-                    links = links->next;
-                }
-                hashtable[i] = hashtable[i]->next;
-            }
-        }
-        // Compress the file
+        // TODO
+        // Check that this is successful
         execl("/usr/bin/gzip", "gzip", filename, NULL);
+        //!!!
+        // if trove file already exists, this command stops and prompts if you would like to override
+        // is there a -y option to run this with so that this runs uninterupted?
         exit(EXIT_SUCCESS);
         break;
+
     default:
         wait(NULL);
-        fclose(fp);
-        close(output_fd);
-        dup2(terminal_output_copy, STDOUT_FILENO);
+        break;
     }
-    printf("parsing complete!\n");
+    printf("Compressed Successfully!\n");
+}
 
-    return 0;
+void build_file(char *file_list[], char *filename, int file_count)
+{
+    FILE *fp = fopen(filename, "w");
+    HASHTABLE *hashtable = hashtable_new();
+    for (int i = 0; i < file_count; i++)
+    {
+        parse_fileargs(file_list[i], hashtable);
+    }
+    for (int i = 0; i < HASHTABLE_SIZE; i++)
+    {
+        while (hashtable[i] != NULL)
+        {
+            fprintf(fp, "#%s\n", hashtable[i]->word);
+            LINK *links = hashtable[i]->link_to_paths;
+            while (links != NULL)
+            {
+                fprintf(fp, "%s\n", links->path);
+                links = links->next;
+            }
+            hashtable[i] = hashtable[i]->next;
+        }
+    }
+    fclose(fp);
+    printf("=====Parsing Complete=====\n");
+    compress_file(filename);
 }
