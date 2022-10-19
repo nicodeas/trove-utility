@@ -112,7 +112,7 @@ void compress_file(char *filename)
     case 0:
         // TODO
         // Check that this is successful
-        execl("/usr/bin/gzip", "gzip", filename, NULL);
+        execl("/usr/bin/gzip", "gzip", filename, "-f", NULL); // run with f flag to ignore overriding warning
         //!!!
         // if trove file already exists, this command stops and prompts if you would like to override
         // is there a -y option to run this with so that this runs uninterupted?
