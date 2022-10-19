@@ -16,7 +16,6 @@
 #include <sys/wait.h>
 
 #define HASHTABLE_SIZE 997
-int word_length;
 
 typedef struct _link
 {
