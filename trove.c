@@ -4,12 +4,8 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include "trove.h"
-#include <limits.h> /* PATH_MAX */
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
 
+#include "globals.h"
 #include "build.h"
 #include "update.h"
 #include "find.h"
@@ -82,7 +78,8 @@ int main(int argc, char *argv[])
     }
     else if(rflag) {
         // Calls the function on remove.c
-        remove_file();
+        FILE *trove = get_file(trovefile);
+        remove_file(argv, trove, argc);
     }
     else {
         FILE *trove = get_file(trovefile);

@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include <limits.h> /* PATH_MAX */
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -45,13 +45,3 @@ extern uint32_t hash_string(char *string);
 extern HASHTABLE *hashtable_new(void);
 extern HEAD_LINK *hashtable_add(HASHTABLE *hashtable, char *string);
 extern HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string);
-
-extern void convert_to_alpha(char *line);
-extern void process_line(char *line, char *path, HASHTABLE *hashtable);
-extern void parse_file(char *fname, char *path, HASHTABLE *hashtable);
-extern void parse_fileargs(char *file_arg, HASHTABLE *hashtable);
-
-
-
-
-

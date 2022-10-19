@@ -1,4 +1,4 @@
-#include "build.h"
+#include "globals.h"
 
 HEAD_LINK *head_link_find(HEAD_LINK *head, char *wanted)
 {
