@@ -107,6 +107,7 @@ void compress_file(char *filename)
         // Change this later ...
         // Could we use errno/ perror?
         printf("Fork failed !!\n");
+        exit(EXIT_FAILURE);
         break;
     case 0:
         // TODO
