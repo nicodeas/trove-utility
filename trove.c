@@ -11,8 +11,6 @@
 #include "find.h"
 #include "remove.h"
 
-
-
 #define OPTIONLIST "f:brul:"
 
 void usage(char *name, char error)
@@ -31,6 +29,9 @@ int main(int argc, char *argv[])
     char *trovefile = NULL;
     int opt;
     bool bflag, rflag, uflag;
+    bflag = false;
+    rflag = false;
+    uflag = false;
 
     word_length = DEFAULT_LENGTH;
     trovefile = DEFAULT_TROVE_FILE_PATH;
@@ -67,23 +68,28 @@ int main(int argc, char *argv[])
     printf("=====End of Arguments=====\n");
     argc -= optind;
     argv += optind;
-    if(bflag) {
+    if (bflag)
+    {
         // Calls the function on build.c
         build_file(argv, trovefile, argc);
     }
-    else if(uflag) {
+    else if (uflag)
+    {
         // Calls the function on update.c
         update_file();
     }
-    else if(rflag) {
+    else if (rflag)
+    {
         // Calls the function on remove.c
-        FILE *trove = get_file(trovefile);
-        remove_file(argv, trove, argc);
+        // FILE *trove = get_file(trovefile);
+        // remove_file(argv, trove, argc);
+        ;
     }
-    else {
-        FILE *trove = get_file(trovefile);
-        printf("Searching for: %s \n", argv[0]);
-        find_word(trove, argv[0]);
+    else
+    {
+        // FILE *trove = get_file(trovefile);
+        // printf("Searching for: %s \n", argv[0]);
+        find_word(trovefile, argv[0]);
     }
     exit(EXIT_SUCCESS);
 }
