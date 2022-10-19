@@ -17,7 +17,7 @@
 
 #define DEFAULT_LENGTH 4
 #define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
-#define HASHTABLE_SIZE 997
+#define HASHTABLE_SIZE 1572869
 extern int word_length;
 
 typedef struct _link
