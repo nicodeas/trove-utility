@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "globals.h"
 #include <string.h>
+#include <libgen.h>
 
 #include "remove.h"
 
@@ -35,6 +36,8 @@ void remove_file(char *trovefile, char *paths[], int path_count)
   bool prev_is_word = false;
   bool remove_path = false;
   FILE *fp = fopen("test.txt", "w");
+  
+  
   while (fgets(line, BUFSIZ, stream) != NULL)
   {
     free(prev_string);
@@ -51,8 +54,10 @@ void remove_file(char *trovefile, char *paths[], int path_count)
     {
       for (int i = 0; i < path_count; i++)
       {
-        int path_len = strlen(paths[i]);
-        if (strncmp(paths[i], prev_string, path_len) == 0)
+        char *p = basename(prev_string);
+        int len = strlen(p);
+        p[len -1] = '\0';
+        if (strcmp(paths[i], p) == 0)
         {
           remove_path = true;
           break;
