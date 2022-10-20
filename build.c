@@ -98,10 +98,9 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
 
 void write_to_file(char *filename, HASHTABLE *hashtable)
 {
-    int pipe_one[2]; // main write, gzip read
-    int pipe_two[2]; // gzip write , main read
-    int terminal_output_copy = dup(STDOUT_FILENO);
-    if ((pipe(pipe_one) == -1) || (pipe(pipe_two) == -1))
+    int fd[2];
+    int terminal_output = dup(STDOUT_FILENO);
+    if ((pipe(fd) == -1))
     {
         printf("Failed to create pipe!\n");
         exit(EXIT_FAILURE);
@@ -113,12 +112,12 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         exit(EXIT_FAILURE);
         break;
     case 0:
-        dup2(pipe_one[0], STDIN_FILENO);
-        dup2(pipe_two[1], STDOUT_FILENO);
-        close(pipe_one[0]);
-        close(pipe_one[1]);
-        close(pipe_two[0]);
-        close(pipe_two[1]);
+        close(fd[1]);
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[0]);
+        // Write to trovefile instead of stdout
+        int output_fd = open(filename, O_CREAT | O_WRONLY, S_IRWXU);
+        dup2(output_fd, STDOUT_FILENO);
 
         if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
         {
@@ -127,9 +126,8 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         break;
 
     default:
-        close(pipe_one[0]);
-        close(pipe_two[1]);
-        dup2(pipe_one[1], STDOUT_FILENO);
+        close(fd[0]);
+        dup2(fd[1], STDOUT_FILENO);
         for (int i = 0; i < HASHTABLE_SIZE; i++)
         {
             while (hashtable[i] != NULL)
@@ -141,33 +139,13 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
                 while (links != NULL)
                 {
                     printf("%s\n", links->path);
-                    // this does not work as well unsure why the data piped is not in the correct form
-                    // write(pipe_one[1], links->path, sizeof(links->path));
                     links = links->next;
                 }
                 hashtable[i] = hashtable[i]->next;
             }
         }
-        dup2(terminal_output_copy, STDOUT_FILENO);
-        close(pipe_one[1]);
-        FILE *output_file = fopen(filename, "w");
-        FILE *compressed = fdopen(pipe_two[0], "r");
-        char c;
-        while (!feof(compressed))
-        {
-            c = fgetc(compressed);
-            fputc(c, output_file);
-        }
-
-        // int out = open(filename, O_WRONLY | O_CREAT);
-        // char line[BUFSIZ];
-        // if
-        // while (read(pipe_two[0], line, BUFSIZ) > 0)
-        // {
-        //     // write(out, line, sizeof(line));
-        //     fprintf(output_file, "%s", line);
-        // }
-        close(pipe_two[0]);
+        close(fd[1]);
+        dup2(terminal_output, STDOUT_FILENO);
         break;
     }
 }
@@ -179,6 +157,8 @@ void build_file(char *file_list[], char *filename, int file_count)
     {
         parse_fileargs(file_list[i], hashtable);
     }
+    printf("=====File Indexing Complete!\n");
+    printf("=====Writing and Compressing to file=====\n");
     write_to_file(filename, hashtable);
-    printf("=====Parsing Complete!=====\n");
+    printf("=====Compression Complete!=====\n");
 }
