@@ -2,13 +2,16 @@
 #include "build.h"
 
 int word_length;
+int unique_file_count;
+int unique_words;
+int word_count;
 
 void convert_to_alpha(char *line)
 {
     char *ptr = line;
     while (*ptr != '\0')
     {
-        if (!isalpha(*ptr))
+        if (!isalnum(*ptr))
         {
             *ptr = ' ';
         }
@@ -26,11 +29,12 @@ void process_line(char *line, char *path, HASHTABLE *hashtable)
     {
         if (strlen(token) >= word_length)
         {
-
+            ++word_count;
             HEAD_LINK *head = hashtable_find(hashtable, token);
             if (head == NULL)
             {
                 head = hashtable_add(hashtable, token);
+               ++unique_words;
             }
 
             LINK *ltp_cpy = head->link_to_paths;
@@ -39,16 +43,21 @@ void process_line(char *line, char *path, HASHTABLE *hashtable)
                 LINK *path_link = new_link(path);
                 path_link->next = head->link_to_paths;
                 head->link_to_paths = path_link;
+                
             }
+            
         }
         token = strtok(NULL, delimter);
+        
     }
 }
 
 void parse_file(char *fname, char *path, HASHTABLE *hashtable)
 {
+    printf("\tSearching words in '%s'\n", path);
     FILE *fp = fopen(fname, "r");
     char line[BUFSIZ];
+    unique_file_count++;
     if (fp == NULL)
     {
         perror(fname);
@@ -56,9 +65,16 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
     }
     while (fgets(line, BUFSIZ, fp) != NULL)
     {
+        printf("READING LINE:   %s  \n", line);
         convert_to_alpha(line);
         process_line(line, path, hashtable);
     }
+    printf("\tfound %i words\n", word_count);
+    word_count = 0;
+}
+
+void statistics() {
+
 }
 
 void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
@@ -80,8 +96,10 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
         }
         while ((dp = readdir(dirp)) != NULL)
         {
+            
             if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, ".."))
             {
+                
                 strcpy(path, base_path);
                 strcat(path, "/");
                 strcat(path, dp->d_name);
@@ -181,4 +199,6 @@ void build_file(char *file_list[], char *filename, int file_count)
     }
     write_to_file(filename, hashtable);
     printf("=====Parsing Complete!=====\n");
+    printf("\t%i unique files\n", unique_file_count);
+    printf("\t%i unique words\n", unique_words);
 }
