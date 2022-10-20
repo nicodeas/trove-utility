@@ -22,7 +22,7 @@ void find_word(char *trovefile, char *word)
         dup2(fd[1], STDOUT_FILENO); // instead of writing to stdout, it writes to the pipe
         close(fd[0]);
         close(fd[1]);
-        execl("/usr/bin/gzcat", "gzcat", "-q", trovefile, NULL);
+        execl("/usr/bin/gzcat", "gzcat", trovefile, NULL);
     }
     close(fd[1]);
     FILE *stream;
