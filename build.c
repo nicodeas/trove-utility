@@ -96,48 +96,89 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-int build_file(char *file_list[], char *filename, int file_count)
+void write_to_file(char *filename, HASHTABLE *hashtable)
 {
-    int output_fd = open(filename, O_WRONLY);
+    int pipe_one[2]; // main write, gzip read
+    int pipe_two[2]; // gzip write , main read
     int terminal_output_copy = dup(STDOUT_FILENO);
-    FILE *fp = fopen(filename, "w");
-
+    if ((pipe(pipe_one) == -1) || (pipe(pipe_two) == -1))
+    {
+        printf("Failed to create pipe!\n");
+        exit(EXIT_FAILURE);
+    }
     switch (fork())
     {
+    case -1:
+        printf("Failed to fork!\n");
+        exit(EXIT_FAILURE);
+        break;
     case 0:
-        dup2(output_fd, STDOUT_FILENO);
-        HASHTABLE *hashtable = hashtable_new();
-        for (int i = 0; i < file_count; i++)
+        dup2(pipe_one[0], STDIN_FILENO);
+        dup2(pipe_two[1], STDOUT_FILENO);
+        close(pipe_one[0]);
+        close(pipe_one[1]);
+        close(pipe_two[0]);
+        close(pipe_two[1]);
+
+        if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
         {
-            parse_fileargs(file_list[i], hashtable);
+            perror("error");
         }
+        break;
+
+    default:
+        close(pipe_one[0]);
+        close(pipe_two[1]);
+        dup2(pipe_one[1], STDOUT_FILENO);
         for (int i = 0; i < HASHTABLE_SIZE; i++)
         {
             while (hashtable[i] != NULL)
             {
                 printf("#%s\n", hashtable[i]->word);
-                fprintf(fp, "#%s\n", hashtable[i]->word); // Write word to file
+                // this does not work as well unsure why the data piped is not in the correct form
+                // write(pipe_one[1], hashtable[i]->word, sizeof(hashtable[i]->word));
                 LINK *links = hashtable[i]->link_to_paths;
                 while (links != NULL)
                 {
                     printf("%s\n", links->path);
-                    fprintf(fp, "%s\n", links->path); // Write path to file
+                    // this does not work as well unsure why the data piped is not in the correct form
+                    // write(pipe_one[1], links->path, sizeof(links->path));
                     links = links->next;
                 }
                 hashtable[i] = hashtable[i]->next;
             }
         }
-        // Compress the file
-        execl("/usr/bin/gzip", "gzip", filename, NULL);
-        exit(EXIT_SUCCESS);
-        break;
-    default:
-        wait(NULL);
-        fclose(fp);
-        close(output_fd);
         dup2(terminal_output_copy, STDOUT_FILENO);
-    }
-    printf("parsing complete!\n");
+        close(pipe_one[1]);
+        FILE *output_file = fopen(filename, "w");
+        FILE *compressed = fdopen(pipe_two[0], "r");
+        char c;
+        while (!feof(compressed))
+        {
+            c = fgetc(compressed);
+            fputc(c, output_file);
+        }
 
-    return 0;
+        // int out = open(filename, O_WRONLY | O_CREAT);
+        // char line[BUFSIZ];
+        // if
+        // while (read(pipe_two[0], line, BUFSIZ) > 0)
+        // {
+        //     // write(out, line, sizeof(line));
+        //     fprintf(output_file, "%s", line);
+        // }
+        close(pipe_two[0]);
+        break;
+    }
+}
+
+void build_file(char *file_list[], char *filename, int file_count)
+{
+    HASHTABLE *hashtable = hashtable_new();
+    for (int i = 0; i < file_count; i++)
+    {
+        parse_fileargs(file_list[i], hashtable);
+    }
+    write_to_file(filename, hashtable);
+    printf("=====Parsing Complete!=====\n");
 }

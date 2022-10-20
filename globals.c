@@ -2,17 +2,13 @@
 
 HEAD_LINK *head_link_find(HEAD_LINK *head, char *wanted)
 {
-    HEAD_LINK *cpy = head;
-    if (cpy != NULL)
+    while (head != NULL)
     {
-    }
-    while (cpy != NULL)
-    {
-        if (strcmp(cpy->word, wanted) == 0)
+        if (strcmp(head->word, wanted) == 0)
         {
-            return cpy;
+            return head;
         }
-        cpy = cpy->next;
+        head = head->next;
     }
     return NULL;
 }
