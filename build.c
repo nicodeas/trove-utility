@@ -73,10 +73,6 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
     word_count = 0;
 }
 
-void statistics() {
-
-}
-
 void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
 {
     char base_path[PATH_MAX];
