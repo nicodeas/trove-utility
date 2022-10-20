@@ -133,8 +133,6 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
             while (hashtable[i] != NULL)
             {
                 printf("#%s\n", hashtable[i]->word);
-                // this does not work as well unsure why the data piped is not in the correct form
-                // write(pipe_one[1], hashtable[i]->word, sizeof(hashtable[i]->word));
                 LINK *links = hashtable[i]->link_to_paths;
                 while (links != NULL)
                 {
