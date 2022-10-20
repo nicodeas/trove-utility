@@ -59,13 +59,12 @@ int main(int argc, char *argv[])
             usage(argv[0], '?');
         }
     }
-    printf("=====Arguments=====\n");
+    printf("===== Arguments =====\n");
     printf("Trovefile: %s\n", trovefile);
     printf("b flag: %s\n", bflag ? "true" : "false");
     printf("r flag: %s\n", rflag ? "true" : "false");
     printf("u flag: %s\n", uflag ? "true" : "false");
     printf("Length: %d\n", word_length);
-    printf("=====End of Arguments=====\n");
     argc -= optind;
     argv += optind;
     if (bflag)

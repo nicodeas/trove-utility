@@ -104,7 +104,7 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
         
 
     }
-    printf("\tfound %i words\n", word_count);
+    printf("\tFound %i words\n", word_count);
     word_count = 0;
 }
 
@@ -147,6 +147,7 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
 
 void write_to_file(char *filename, HASHTABLE *hashtable)
 {
+    printf("\tWriting %s\n", filename);
     int pipe_one[2]; // main write, gzip read
     int pipe_two[2]; // gzip write , main read
     int terminal_output_copy = dup(STDOUT_FILENO);
@@ -202,6 +203,7 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         FILE *output_file = fopen(filename, "w");
         FILE *compressed = fdopen(pipe_two[0], "r");
         char c;
+        printf("\tCompressing %s\n", filename);
         while (!feof(compressed))
         {
             c = fgetc(compressed);
@@ -224,12 +226,13 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
 void build_file(char *file_list[], char *filename, int file_count)
 {
     HASHTABLE *hashtable = hashtable_new();
+    printf("===== Parsing Files =====\n");
     for (int i = 0; i < file_count; i++)
     {
         parse_fileargs(file_list[i], hashtable);
     }
     write_to_file(filename, hashtable);
-    printf("=====Parsing Complete!=====\n");
+    printf("===== Parsing Complete =====\n");
     printf("\t%i unique files\n", unique_file_count);
     printf("\t%i unique words\n", unique_words);
 }
