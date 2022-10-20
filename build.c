@@ -116,7 +116,7 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
         // Write to trovefile instead of stdout
-        int output_fd = open(filename, O_CREAT | O_WRONLY, S_IRWXU);
+        int output_fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
         dup2(output_fd, STDOUT_FILENO);
 
         if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
