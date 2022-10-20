@@ -6,34 +6,63 @@ int unique_file_count;
 int unique_words;
 int word_count;
 
-void convert_to_alpha(char *line)
-{
-    char *ptr = line;
-    while (*ptr != '\0')
-    {
-        if (!isalnum(*ptr))
-        {
-            *ptr = ' ';
-        }
-        ++ptr;
-    }
-}
+// void convert_to_alpha(char *line)
+// {
+//     char *ptr = line;
+//     while (*ptr != '\0')
+//     {
+//         if (!isalnum(*ptr))
+//         {
+//             *ptr = ' ';
+//         }
+//         ++ptr;
+//     }
+// }
 
-void process_line(char *line, char *path, HASHTABLE *hashtable)
-{
+// void process_line(char *line, char *path, HASHTABLE *hashtable)
+// {
 
-    char delimter[2] = {" "};
-    char *token;
-    token = strtok(line, delimter);
-    while (token != NULL)
-    {
-        if (strlen(token) >= word_length)
+//     char delimter[2] = {" "};
+//     char *token;
+//     token = strtok(line, delimter);
+//     while (token != NULL)
+//     {
+//         if (strlen(token) >= word_length)
+//         {
+//             ++word_count;
+//             printf("-- %s\n", token);
+//             HEAD_LINK *head = hashtable_find(hashtable, token);
+//             if (head == NULL)
+//             {
+//                 head = hashtable_add(hashtable, token);
+//                ++unique_words;
+//             }
+
+//             LINK *ltp_cpy = head->link_to_paths;
+//             if (!path_link_find(ltp_cpy, path))
+//             {
+//                 LINK *path_link = new_link(path);
+//                 path_link->next = head->link_to_paths;
+//                 head->link_to_paths = path_link;
+                
+//             }
+            
+//         }
+//         token = strtok(NULL, delimter);
+        
+//     }
+// }
+
+void process_word(char *word, char *path,HASHTABLE *hashtable) {
+    int length = strlen(word);
+    
+    if (length >= word_length)
         {
             ++word_count;
-            HEAD_LINK *head = hashtable_find(hashtable, token);
+            HEAD_LINK *head = hashtable_find(hashtable, word);
             if (head == NULL)
             {
-                head = hashtable_add(hashtable, token);
+                head = hashtable_add(hashtable, word);
                ++unique_words;
             }
 
@@ -47,27 +76,33 @@ void process_line(char *line, char *path, HASHTABLE *hashtable)
             }
             
         }
-        token = strtok(NULL, delimter);
-        
-    }
 }
 
 void parse_file(char *fname, char *path, HASHTABLE *hashtable)
 {
     printf("\tSearching words in '%s'\n", path);
     FILE *fp = fopen(fname, "r");
-    char line[BUFSIZ];
+    
     unique_file_count++;
+    
     if (fp == NULL)
     {
         perror(fname);
         exit(EXIT_FAILURE);
     }
-    while (fgets(line, BUFSIZ, fp) != NULL)
-    {
-        printf("READING LINE:   %s  \n", line);
-        convert_to_alpha(line);
-        process_line(line, path, hashtable);
+
+    int c;
+    char word[BUFSIZ];
+    while ((c = fgetc(fp)) != EOF) {
+        if(!isalnum(c)) {
+            process_word(word, path, hashtable);
+            strcpy(word, "");
+        }
+        else {
+            strncat(word, (char*)&c, 1);
+        }
+        
+
     }
     printf("\tfound %i words\n", word_count);
     word_count = 0;
