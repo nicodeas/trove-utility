@@ -96,59 +96,89 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-void compress_file(char *filename)
+void write_to_file(char *filename, HASHTABLE *hashtable)
 {
-    // Do we want this function else where as we are probably going to use this
-    // In update/ remove functions as well?
+    int pipe_one[2]; // main write, gzip read
+    int pipe_two[2]; // gzip write , main read
+    int terminal_output_copy = dup(STDOUT_FILENO);
+    if ((pipe(pipe_one) == -1) || (pipe(pipe_two) == -1))
+    {
+        printf("Failed to create pipe!\n");
+        exit(EXIT_FAILURE);
+    }
     switch (fork())
     {
     case -1:
-        // TODO
-        // Change this later ...
-        // Could we use errno/ perror?
-        printf("Fork failed !!\n");
+        printf("Failed to fork!\n");
         exit(EXIT_FAILURE);
         break;
     case 0:
-        // TODO
-        // Check that this is successful
-        execl("/usr/bin/gzip", "gzip", filename, "-f", NULL); // run with f flag to ignore overriding warning
-        //!!!
-        // if trove file already exists, this command stops and prompts if you would like to override
-        // is there a -y option to run this with so that this runs uninterupted?
-        exit(EXIT_SUCCESS);
+        dup2(pipe_one[0], STDIN_FILENO);
+        dup2(pipe_two[1], STDOUT_FILENO);
+        close(pipe_one[0]);
+        close(pipe_one[1]);
+        close(pipe_two[0]);
+        close(pipe_two[1]);
+
+        if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
+        {
+            perror("error");
+        }
         break;
 
     default:
-        wait(NULL);
+        close(pipe_one[0]);
+        close(pipe_two[1]);
+        dup2(pipe_one[1], STDOUT_FILENO);
+        for (int i = 0; i < HASHTABLE_SIZE; i++)
+        {
+            while (hashtable[i] != NULL)
+            {
+                printf("#%s\n", hashtable[i]->word);
+                // this does not work as well unsure why the data piped is not in the correct form
+                // write(pipe_one[1], hashtable[i]->word, sizeof(hashtable[i]->word));
+                LINK *links = hashtable[i]->link_to_paths;
+                while (links != NULL)
+                {
+                    printf("%s\n", links->path);
+                    // this does not work as well unsure why the data piped is not in the correct form
+                    // write(pipe_one[1], links->path, sizeof(links->path));
+                    links = links->next;
+                }
+                hashtable[i] = hashtable[i]->next;
+            }
+        }
+        dup2(terminal_output_copy, STDOUT_FILENO);
+        close(pipe_one[1]);
+        FILE *output_file = fopen(filename, "w");
+        FILE *compressed = fdopen(pipe_two[0], "r");
+        char c;
+        while (!feof(compressed))
+        {
+            c = fgetc(compressed);
+            fputc(c, output_file);
+        }
+
+        // int out = open(filename, O_WRONLY | O_CREAT);
+        // char line[BUFSIZ];
+        // if
+        // while (read(pipe_two[0], line, BUFSIZ) > 0)
+        // {
+        //     // write(out, line, sizeof(line));
+        //     fprintf(output_file, "%s", line);
+        // }
+        close(pipe_two[0]);
         break;
     }
-    printf("Compressed Successfully!\n");
 }
 
 void build_file(char *file_list[], char *filename, int file_count)
 {
-    FILE *fp = fopen(filename, "w");
     HASHTABLE *hashtable = hashtable_new();
     for (int i = 0; i < file_count; i++)
     {
         parse_fileargs(file_list[i], hashtable);
     }
-    for (int i = 0; i < HASHTABLE_SIZE; i++)
-    {
-        while (hashtable[i] != NULL)
-        {
-            fprintf(fp, "#%s\n", hashtable[i]->word);
-            LINK *links = hashtable[i]->link_to_paths;
-            while (links != NULL)
-            {
-                fprintf(fp, "%s\n", links->path);
-                links = links->next;
-            }
-            hashtable[i] = hashtable[i]->next;
-        }
-    }
-    fclose(fp);
-    printf("=====Parsing Complete=====\n");
-    compress_file(filename);
+    write_to_file(filename, hashtable);
+    printf("=====Parsing Complete!=====\n");
 }
