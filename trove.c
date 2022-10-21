@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
         case 'f':
+            CHECK_ALLOC(optarg);
             trovefile = strdup(optarg);
             break;
         case 'b':
