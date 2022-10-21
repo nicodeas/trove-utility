@@ -127,7 +127,11 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
                 LINK *links = hashtable[i]->link_to_paths;
                 while (links != NULL)
                 {
-                    printf("%s\n", links->path);
+                    if (links->path != NULL)
+                    {
+
+                        printf("%s\n", links->path);
+                    }
                     links = links->next;
                 }
                 hashtable[i] = hashtable[i]->next;
