@@ -87,7 +87,7 @@ HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string)
 
 void write_to_file(char *filename, HASHTABLE *hashtable)
 {
-     printf("\tWriting %s\n", filename);
+    printf("\tWriting %s\n", filename);
     int fd[2];
     int terminal_output = dup(STDOUT_FILENO);
     if ((pipe(fd) == -1))
@@ -137,4 +137,51 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         dup2(terminal_output, STDOUT_FILENO);
         break;
     }
+}
+
+HASHTABLE *read_trove_file(char *filename)
+{
+    HASHTABLE *hashtable = hashtable_new();
+    int fd[2];
+    if (pipe(fd) == -1)
+    {
+        printf("Error creating pipe\n");
+        exit(EXIT_FAILURE);
+    };
+
+    int pid = fork();
+    if (pid == -1)
+    {
+        printf("Fork failed !!\n");
+        exit(EXIT_FAILURE);
+    }
+    if (pid == 0)
+    {
+        dup2(fd[1], STDOUT_FILENO); // instead of writing to stdout, it writes to the pipe
+        close(fd[0]);
+        close(fd[1]);
+        execl("/usr/bin/gzcat", "gzcat", filename, NULL);
+    }
+    close(fd[1]);
+    FILE *stream;
+    stream = fdopen(fd[0], "r");
+    char line[BUFSIZ];
+    HEAD_LINK *curr_head = NULL;
+    while (fgets(line, BUFSIZ, stream) != NULL)
+    {
+        char *curr = line;
+        line[strlen(line) - 1] = '\0';
+        if (*line == '#')
+        {
+            curr_head = hashtable_add(hashtable, ++curr);
+        }
+        else
+        {
+            LINK *path_link = new_link(line);
+            path_link->next = curr_head->link_to_paths;
+            curr_head->link_to_paths = path_link;
+        }
+    }
+    close(fd[0]);
+    return hashtable;
 }
