@@ -1,5 +1,5 @@
 // CITS2002 Project 2 2022
-// Student1: 50
+// Student1: 22719855 MICHLIN NICHOLAS 50
 // Student2: 23281104 KERR CHANTELLE 50
 #include "globals.h"
 #include "trovelib.h"
@@ -81,7 +81,8 @@ int main(int argc, char *argv[])
     {
         find_word(trovefile, argv[0]);
     }
-    else {
+    else
+    {
         // There is multiple flags set
         usage("./trove", '?');
     }
