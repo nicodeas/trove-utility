@@ -50,3 +50,6 @@ extern HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string);
 
 extern void write_to_file(char *filename, HASHTABLE *hashtable);
 extern HASHTABLE *read_trove_file(char *filename);
+
+extern bool head_contains_path(HEAD_LINK *head);
+extern void sanitise_hashtable(HASHTABLE *hashtable);

@@ -69,12 +69,14 @@ int main(int argc, char *argv[])
     else if (uflag && !bflag && !rflag)
     {
         HASHTABLE *hashtable = remove_file(trovefile, argv, argc);
+        sanitise_hashtable(hashtable);
         hashtable = build_file(argv, argc, hashtable);
         write_to_file(trovefile, hashtable);
     }
     else if (rflag && !bflag && !uflag)
     {
         HASHTABLE *hashtable = remove_file(trovefile, argv, argc);
+        sanitise_hashtable(hashtable);
         write_to_file(trovefile, hashtable);
     }
     else if (!rflag && !bflag && !uflag)

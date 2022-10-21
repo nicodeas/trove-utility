@@ -122,19 +122,23 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         {
             while (hashtable[i] != NULL)
             {
-                printf("#%s\n", hashtable[i]->word);
-                LINK *links = hashtable[i]->link_to_paths;
-                while (links != NULL)
+                if (hashtable[i]->word != NULL)
                 {
-                    if (links->path != NULL)
+
+                    printf("#%s\n", hashtable[i]->word);
+                    LINK *links = hashtable[i]->link_to_paths;
+                    while (links != NULL)
                     {
-                        printf("%s\n", links->path);
-                        free(links->path);
+                        if (links->path != NULL)
+                        {
+                            printf("%s\n", links->path);
+                            free(links->path);
+                        }
+                        LINK *prev = links;
+                        links = links->next;
+                        free(prev);
+                        prev = NULL;
                     }
-                    LINK *prev = links;
-                    links = links->next;
-                    free(prev);
-                    prev = NULL;
                 }
                 HEAD_LINK *prev_head = hashtable[i];
                 hashtable[i] = hashtable[i]->next;
@@ -195,4 +199,33 @@ HASHTABLE *read_trove_file(char *filename)
     fclose(stream);
     close(fd[0]);
     return hashtable;
+}
+void sanitise_hashtable(HASHTABLE *hashtable)
+{
+    for (int i = 0; i < HASHTABLE_SIZE; i++)
+    {
+        HEAD_LINK *curr_head = hashtable[i];
+        while (curr_head != NULL)
+        {
+            if (!head_contains_path(curr_head))
+            {
+                free(curr_head->word);
+                curr_head->word = NULL;
+            }
+            curr_head = curr_head->next;
+        }
+    }
+}
+bool head_contains_path(HEAD_LINK *head)
+{
+    LINK *links = head->link_to_paths;
+    while (links != NULL)
+    {
+        if (links->path != NULL)
+        {
+            return true;
+        }
+        links = links->next;
+    }
+    return false;
 }
