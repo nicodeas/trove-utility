@@ -49,3 +49,4 @@ extern HEAD_LINK *hashtable_add(HASHTABLE *hashtable, char *string);
 extern HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string);
 
 extern void write_to_file(char *filename, HASHTABLE *hashtable);
+extern HASHTABLE *read_trove_file(char *filename);
