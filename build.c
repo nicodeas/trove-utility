@@ -114,7 +114,7 @@ HASHTABLE *build_file(char *file_list[], int file_count, HASHTABLE *hashtable)
     {
         parse_fileargs(file_list[i], hashtable);
     }
-    printf("\t===== Parsing Complete =====\n");
+    printf("===== Parsing Complete =====\n");
     printf("\t%i unique files\n", unique_file_count);
     printf("\t%i unique words\n", unique_words);
     return hashtable;

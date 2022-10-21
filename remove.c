@@ -30,9 +30,11 @@ void remove_path(HASHTABLE *hashtable, char *path)
 
 HASHTABLE *remove_file(char *trovefile, char *paths[], int path_count)
 {
+  printf("===== Removing =====\n");
   HASHTABLE *hashtable = read_trove_file(trovefile);
   for (int i = 0; i < path_count; i++)
   {
+    printf("\tRemoving '%s'\n", paths[i]);
     remove_path(hashtable, paths[i]);
   }
   return hashtable;
