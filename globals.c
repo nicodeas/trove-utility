@@ -87,11 +87,10 @@ HEAD_LINK *hashtable_find(HASHTABLE *hashtable, char *string)
 
 void write_to_file(char *filename, HASHTABLE *hashtable)
 {
-    printf("\tWriting %s\n", filename);
-    int pipe_one[2]; // main write, gzip read
-    int pipe_two[2]; // gzip write , main read
-    int terminal_output_copy = dup(STDOUT_FILENO);
-    if ((pipe(pipe_one) == -1) || (pipe(pipe_two) == -1))
+     printf("\tWriting %s\n", filename);
+    int fd[2];
+    int terminal_output = dup(STDOUT_FILENO);
+    if ((pipe(fd) == -1))
     {
         printf("Failed to create pipe!\n");
         exit(EXIT_FAILURE);
@@ -103,12 +102,13 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         exit(EXIT_FAILURE);
         break;
     case 0:
-        dup2(pipe_one[0], STDIN_FILENO);
-        dup2(pipe_two[1], STDOUT_FILENO);
-        close(pipe_one[0]);
-        close(pipe_one[1]);
-        close(pipe_two[0]);
-        close(pipe_two[1]);
+        printf("\tCompressing %s\n", filename);
+        close(fd[1]);
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[0]);
+        // Write to trovefile instead of stdout
+        int output_fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+        dup2(output_fd, STDOUT_FILENO);
 
         if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
         {
@@ -117,48 +117,24 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
         break;
 
     default:
-        close(pipe_one[0]);
-        close(pipe_two[1]);
-        dup2(pipe_one[1], STDOUT_FILENO);
+        close(fd[0]);
+        dup2(fd[1], STDOUT_FILENO);
         for (int i = 0; i < HASHTABLE_SIZE; i++)
         {
             while (hashtable[i] != NULL)
             {
                 printf("#%s\n", hashtable[i]->word);
-                // this does not work as well unsure why the data piped is not in the correct form
-                // write(pipe_one[1], hashtable[i]->word, sizeof(hashtable[i]->word));
                 LINK *links = hashtable[i]->link_to_paths;
                 while (links != NULL)
                 {
                     printf("%s\n", links->path);
-                    // this does not work as well unsure why the data piped is not in the correct form
-                    // write(pipe_one[1], links->path, sizeof(links->path));
                     links = links->next;
                 }
                 hashtable[i] = hashtable[i]->next;
             }
         }
-        dup2(terminal_output_copy, STDOUT_FILENO);
-        close(pipe_one[1]);
-        FILE *output_file = fopen(filename, "w");
-        FILE *compressed = fdopen(pipe_two[0], "r");
-        char c;
-        printf("\tCompressing %s\n", filename);
-        while (!feof(compressed))
-        {
-            c = fgetc(compressed);
-            fputc(c, output_file);
-        }
-
-        // int out = open(filename, O_WRONLY | O_CREAT);
-        // char line[BUFSIZ];
-        // if
-        // while (read(pipe_two[0], line, BUFSIZ) > 0)
-        // {
-        //     // write(out, line, sizeof(line));
-        //     fprintf(output_file, "%s", line);
-        // }
-        close(pipe_two[0]);
+        close(fd[1]);
+        dup2(terminal_output, STDOUT_FILENO);
         break;
     }
 }
