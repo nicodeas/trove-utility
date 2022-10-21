@@ -16,6 +16,7 @@ HEAD_LINK *head_link_find(HEAD_LINK *head, char *wanted)
 HEAD_LINK *new_head_link(char *string)
 {
     HEAD_LINK *new = malloc(sizeof(HEAD_LINK));
+    CHECK_ALLOC(new);
     new->word = strdup(string);
     new->next = NULL;
     new->link_to_paths = NULL;
@@ -25,6 +26,7 @@ HEAD_LINK *new_head_link(char *string)
 LINK *new_link(char *path)
 {
     LINK *new = malloc(sizeof(LINK));
+    CHECK_ALLOC(new);
     new->next = NULL;
     new->path = strdup(path);
     return new;

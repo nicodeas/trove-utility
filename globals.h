@@ -18,6 +18,8 @@
 #define DEFAULT_LENGTH 4
 #define DEFAULT_TROVE_FILE_PATH "/tmp/trove"
 #define HASHTABLE_SIZE 1572869
+#define CHECK_ALLOC(p) if(p == NULL) { perror(__func__); exit(EXIT_FAILURE); }
+
 extern int word_length;
 
 typedef struct _link

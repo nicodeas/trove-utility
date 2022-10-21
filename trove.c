@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
         switch (opt)
         {
         case 'f':
+            CHECK_ALLOC(optarg);
             trovefile = strdup(optarg);
             break;
         case 'b':
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
             usage(argv[0], '?');
         }
     }
-    printf("\t===== Arguments =====\n");
+    printf("===== Arguments =====\n");
     printf("\tTrovefile: %s\n", trovefile);
     printf("\tb flag: %s\n", bflag ? "true" : "false");
     printf("\tr flag: %s\n", rflag ? "true" : "false");
