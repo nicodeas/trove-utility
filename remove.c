@@ -7,6 +7,19 @@
 #include "remove.h"
 
 
+char *my_strrstr(const char *s1, const char *s2) {
+    char *last = NULL;
+    size_t len = strlen(s2);
+
+    while ((s1 = strchr(s1, *s2)) != NULL) {
+        if (!strncmp(s1, s2, len))
+            last = (char *)s1;
+        if (*s1++ == '\0')
+            break;
+    }
+    return last;
+}
+
 void remove_file(char *trovefile, char *paths[], int path_count)
 {
 
@@ -46,12 +59,12 @@ void remove_file(char *trovefile, char *paths[], int path_count)
       else {
         for (int i = 0; i < path_count; i++)
         {
-          if(strstr(line, paths[i]) == NULL) {
+
+          if(my_strrstr(line, paths[i]) == NULL) {
               LINK *path_link = new_link(line);
               path_link->next = head->link_to_paths;
               head->link_to_paths = path_link;
           }
-       
         }
       }
   }
