@@ -174,7 +174,7 @@ HASHTABLE *read_trove_file(char *filename)
         dup2(fd[1], STDOUT_FILENO); // instead of writing to stdout, it writes to the pipe
         close(fd[0]);
         close(fd[1]);
-        if (execl("/usr/bin/gzip", "gzip", NULL) == -1)
+        if (execl("/usr/bin/gzcat", "gzcat", filename, NULL) == -1)
         {
             perror("error");
         }
