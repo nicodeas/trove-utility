@@ -1,6 +1,6 @@
 CC 		 	= cc -std=c11
 CFLAGS 	= -Wall -Werror
-OBJFILES = trove.o globals.o build.o remove.o update.o find.o
+OBJFILES = trove.o globals.o build.o remove.o find.o
 HEADERS = trovelib.h globals.h
 TARGET = trove
 
