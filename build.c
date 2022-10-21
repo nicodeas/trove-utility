@@ -44,47 +44,46 @@ int word_count;
 //                 LINK *path_link = new_link(path);
 //                 path_link->next = head->link_to_paths;
 //                 head->link_to_paths = path_link;
-                
+
 //             }
-            
+
 //         }
 //         token = strtok(NULL, delimter);
-        
+
 //     }
 // }
 
-void process_word(char *word, char *path,HASHTABLE *hashtable) {
+void process_word(char *word, char *path, HASHTABLE *hashtable)
+{
     int length = strlen(word);
-    
-    if (length >= word_length)
-        {
-            ++word_count;
-            HEAD_LINK *head = hashtable_find(hashtable, word);
-            if (head == NULL)
-            {
-                head = hashtable_add(hashtable, word);
-               ++unique_words;
-            }
 
-            LINK *ltp_cpy = head->link_to_paths;
-            if (!path_link_find(ltp_cpy, path))
-            {
-                LINK *path_link = new_link(path);
-                path_link->next = head->link_to_paths;
-                head->link_to_paths = path_link;
-                
-            }
-            
+    if (length >= word_length)
+    {
+        ++word_count;
+        HEAD_LINK *head = hashtable_find(hashtable, word);
+        if (head == NULL)
+        {
+            head = hashtable_add(hashtable, word);
+            ++unique_words;
         }
+
+        LINK *ltp_cpy = head->link_to_paths;
+        if (!path_link_find(ltp_cpy, path))
+        {
+            LINK *path_link = new_link(path);
+            path_link->next = head->link_to_paths;
+            head->link_to_paths = path_link;
+        }
+    }
 }
 
 void parse_file(char *fname, char *path, HASHTABLE *hashtable)
 {
     printf("\tSearching words in '%s'\n", path);
     FILE *fp = fopen(fname, "r");
-    
+
     unique_file_count++;
-    
+
     if (fp == NULL)
     {
         perror(fname);
@@ -93,16 +92,22 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
 
     int c;
     char word[BUFSIZ];
-    while ((c = fgetc(fp)) != EOF) {
-        if(!isalnum(c)) {
-            process_word(word, path, hashtable);
-            strcpy(word, "");
+    char *window;
+    window = word;
+    while ((c = fgetc(fp)) != EOF)
+    {
+        if (isalnum(c))
+        {
+            *window = c;
+            window++;
         }
-        else {
-            strncat(word, (char*)&c, 1);
-        }
-        
+        else
+        {
+            *window = '\0';
 
+            process_word(word, path, hashtable);
+            window = word;
+        }
     }
     printf("\tFound %i words\n", word_count);
     word_count = 0;
@@ -127,10 +132,10 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
         }
         while ((dp = readdir(dirp)) != NULL)
         {
-            
+
             if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, ".."))
             {
-                
+
                 strcpy(path, base_path);
                 strcat(path, "/");
                 strcat(path, dp->d_name);
@@ -144,7 +149,6 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
         parse_file(file_arg, base_path, hashtable);
     }
 }
-
 
 void build_file(char *file_list[], char *filename, int file_count)
 {
