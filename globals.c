@@ -183,5 +183,6 @@ HASHTABLE *read_trove_file(char *filename)
         }
     }
     close(fd[0]);
+    close(stream);
     return hashtable;
 }

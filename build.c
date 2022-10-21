@@ -6,53 +6,6 @@ int unique_file_count;
 int unique_words;
 int word_count;
 
-// void convert_to_alpha(char *line)
-// {
-//     char *ptr = line;
-//     while (*ptr != '\0')
-//     {
-//         if (!isalnum(*ptr))
-//         {
-//             *ptr = ' ';
-//         }
-//         ++ptr;
-//     }
-// }
-
-// void process_line(char *line, char *path, HASHTABLE *hashtable)
-// {
-
-//     char delimter[2] = {" "};
-//     char *token;
-//     token = strtok(line, delimter);
-//     while (token != NULL)
-//     {
-//         if (strlen(token) >= word_length)
-//         {
-//             ++word_count;
-//             printf("-- %s\n", token);
-//             HEAD_LINK *head = hashtable_find(hashtable, token);
-//             if (head == NULL)
-//             {
-//                 head = hashtable_add(hashtable, token);
-//                ++unique_words;
-//             }
-
-//             LINK *ltp_cpy = head->link_to_paths;
-//             if (!path_link_find(ltp_cpy, path))
-//             {
-//                 LINK *path_link = new_link(path);
-//                 path_link->next = head->link_to_paths;
-//                 head->link_to_paths = path_link;
-
-//             }
-
-//         }
-//         token = strtok(NULL, delimter);
-
-//     }
-// }
-
 void process_word(char *word, char *path, HASHTABLE *hashtable)
 {
     int length = strlen(word);
@@ -111,6 +64,7 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
     }
     printf("\tFound %i words\n", word_count);
     word_count = 0;
+    close(fp);
 }
 
 void parse_fileargs(char *file_arg, HASHTABLE *hashtable)

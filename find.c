@@ -51,5 +51,6 @@ void find_word(char *trovefile, char *word)
             printf("%s\n", line);
         }
     }
+    close(stream);
     close(fd[0]);
 }
