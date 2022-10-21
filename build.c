@@ -104,16 +104,19 @@ void parse_fileargs(char *file_arg, HASHTABLE *hashtable)
     }
 }
 
-void build_file(char *file_list[], char *filename, int file_count)
+HASHTABLE *build_file(char *file_list[], int file_count, HASHTABLE *hashtable)
 {
-    HASHTABLE *hashtable = hashtable_new();
+    if (hashtable == NULL)
+    {
+        hashtable = hashtable_new();
+    }
     printf("===== Parsing Files =====\n");
     for (int i = 0; i < file_count; i++)
     {
         parse_fileargs(file_list[i], hashtable);
     }
-    write_to_file(filename, hashtable);
-    printf("===== Parsing Complete =====\n");
+    printf("\t===== Parsing Complete =====\n");
     printf("\t%i unique files\n", unique_file_count);
     printf("\t%i unique words\n", unique_words);
+    return hashtable;
 }

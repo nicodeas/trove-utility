@@ -41,14 +41,13 @@ bool path_link_find(LINK *link, char *wanted_path)
 {
     while (link != NULL)
     {
-        if (strcmp(link->path, wanted_path) == 0)
+        if ((link->path != NULL) && strcmp(link->path, wanted_path) == 0)
         {
             return true;
         }
         link = link->next;
     }
     return false;
-    return true;
 }
 
 uint32_t hash_string(char *string)
@@ -129,12 +128,19 @@ void write_to_file(char *filename, HASHTABLE *hashtable)
                 {
                     if (links->path != NULL)
                     {
-
                         printf("%s\n", links->path);
+                        free(links->path);
                     }
+                    LINK *prev = links;
                     links = links->next;
+                    free(prev);
+                    prev = NULL;
                 }
+                HEAD_LINK *prev_head = hashtable[i];
                 hashtable[i] = hashtable[i]->next;
+                free(prev_head->word);
+                free(prev_head);
+                prev_head = NULL;
             }
         }
         close(fd[1]);
@@ -186,6 +192,7 @@ HASHTABLE *read_trove_file(char *filename)
             curr_head->link_to_paths = path_link;
         }
     }
+    fclose(stream);
     close(fd[0]);
     return hashtable;
 }

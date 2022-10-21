@@ -28,12 +28,12 @@ void remove_path(HASHTABLE *hashtable, char *path)
   }
 }
 
-void remove_file(char *trovefile, char *paths[], int path_count)
+HASHTABLE *remove_file(char *trovefile, char *paths[], int path_count)
 {
   HASHTABLE *hashtable = read_trove_file(trovefile);
   for (int i = 0; i < path_count; i++)
   {
     remove_path(hashtable, paths[i]);
   }
-  write_to_file(trovefile, hashtable);
+  return hashtable;
 }
