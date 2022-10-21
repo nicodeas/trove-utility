@@ -58,27 +58,31 @@ int main(int argc, char *argv[])
     printf("Length: %d\n", word_length);
     argc -= optind;
     argv += optind;
-    if (bflag)
+    if (bflag && !uflag && !rflag)
     {
         // Calls the function on build.c
         build_file(argv, trovefile, argc);
     }
-    else if (uflag)
+    else if (uflag && !bflag && !rflag)
     {
         // Calls the function on update.c
         update_file();
     }
-    else if (rflag)
+    else if (rflag && !bflag && !uflag)
     {
         // Calls the function on remove.c
         // FILE *trove = get_file(trovefile);
         remove_file(trovefile, argv, argc);
     }
-    else
+    else if (!rflag && !bflag && !uflag)
     {
         // FILE *trove = get_file(trovefile);
         // printf("Searching for: %s \n", argv[0]);
         find_word(trovefile, argv[0]);
+    }
+    else {
+        // There is multiple flags set
+        usage("./trove", '?');
     }
     exit(EXIT_SUCCESS);
 }
