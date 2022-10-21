@@ -32,16 +32,15 @@ void process_word(char *word, char *path, HASHTABLE *hashtable)
 
 void parse_file(char *fname, char *path, HASHTABLE *hashtable)
 {
-    printf("\tSearching words in '%s'\n", path);
     FILE *fp = fopen(fname, "r");
-
-    unique_file_count++;
-
+    
     if (fp == NULL)
     {
         perror(fname);
         exit(EXIT_FAILURE);
     }
+    printf("\tSearching words in '%s'\n", path);
+    unique_file_count++;
 
     int c;
     char word[BUFSIZ];
