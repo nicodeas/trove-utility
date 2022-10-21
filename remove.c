@@ -6,7 +6,6 @@
 
 #include "remove.h"
 
-
 void remove_file(char *trovefile, char *paths[], int path_count)
 {
 
@@ -35,25 +34,29 @@ void remove_file(char *trovefile, char *paths[], int path_count)
   FILE *stream;
   stream = fdopen(fd[0], "r");
   char line[BUFSIZ];
-  
+  char *ptr;
   HEAD_LINK *head = NULL;
   while (fgets(line, BUFSIZ, stream) != NULL)
   {
-      if(*line == '#') {
-        memmove(line, line+1, strlen(line)); // Remove the hash
-        head = hashtable_add(hashtable, line);
-      }
-      else {
-        for (int i = 0; i < path_count; i++)
+    if (*line == '#')
+    {
+
+      ptr = line;
+      ptr++;
+      head = hashtable_add(hashtable, ptr);
+    }
+    else
+    {
+      for (int i = 0; i < path_count; i++)
+      {
+        if (strstr(line, paths[i]) == NULL)
         {
-          if(strstr(line, paths[i]) == NULL) {
-              LINK *path_link = new_link(line);
-              path_link->next = head->link_to_paths;
-              head->link_to_paths = path_link;
-          }
-       
+          LINK *path_link = new_link(line);
+          path_link->next = head->link_to_paths;
+          head->link_to_paths = path_link;
         }
       }
+    }
   }
   close(fd[0]);
   write_to_file(trovefile, hashtable);
