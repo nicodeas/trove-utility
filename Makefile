@@ -1,14 +1,14 @@
 CC 		 	= cc -std=c11
 CFLAGS 	= -Wall -Werror
 OBJFILES = trove.o globals.o build.o remove.o update.o find.o
-HEADER = trove.h 
+HEADERS = trovelib.h globals.h
 TARGET = trove
 
 
-$(TARGET): $(HEADER) $(OBJFILES) 
+$(TARGET): $(HEADERS) $(OBJFILES) 
 		$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) 
 
-%.o:	%.c %.h
+%.o:	%.c
 		$(CC) $(CFLAGS) -c $<
 
 clean:

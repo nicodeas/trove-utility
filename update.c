@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "update.h"
+// #include "update.h"
+#include "globals.h"
+#include "trovelib.h"
 
 void update_file() {
   printf("UPDATING NOW\n");

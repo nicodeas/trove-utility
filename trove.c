@@ -3,13 +3,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include "trove.h"
+// #include "trove.h"
 
 #include "globals.h"
-#include "build.h"
-#include "update.h"
-#include "find.h"
-#include "remove.h"
+#include "trovelib.h"
 
 #define OPTIONLIST "f:brul:"
 
@@ -19,6 +16,7 @@ void usage(char *name, char error)
     {
     case '?':
         printf("Usage: %s [-f trovefile]  [-b  |  -r  |  -u]  [-l length]  filelist\n", name);
+        printf("Usage: %s [-f trovefile] word\n", name);
         break;
     }
     exit(EXIT_FAILURE);

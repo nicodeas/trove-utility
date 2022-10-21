@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "find.h"
+#include "globals.h"
+#include "trovelib.h"
 
 void find_word(char *trovefile, char *word)
 {

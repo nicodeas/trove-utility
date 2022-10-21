@@ -1,10 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "globals.h"
-#include <string.h>
-#include <libgen.h>
-
-#include "remove.h"
+#include "trovelib.h"
 
 
 char *my_strrstr(const char *s1, const char *s2) {
