@@ -41,14 +41,13 @@ bool path_link_find(LINK *link, char *wanted_path)
 {
     while (link != NULL)
     {
-        if (strcmp(link->path, wanted_path) == 0)
+        if ((link->path != NULL) && strcmp(link->path, wanted_path) == 0)
         {
             return true;
         }
         link = link->next;
     }
     return false;
-    return true;
 }
 
 uint32_t hash_string(char *string)

@@ -20,4 +20,4 @@
 extern void process_word(char *fname, char *path, HASHTABLE *hashtable);
 extern void parse_fileargs(char *file_arg, HASHTABLE *hashtable);
 
-extern void build_file(char *file_list[], char *filename, int file_count); // test function
+extern HASHTABLE *build_file(char *file_list[], int file_count, HASHTABLE *hashtable); // test function

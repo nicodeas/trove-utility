@@ -59,34 +59,32 @@ int main(int argc, char *argv[])
             usage(argv[0], '?');
         }
     }
-    printf("===== Arguments =====\n");
-    printf("Trovefile: %s\n", trovefile);
-    printf("b flag: %s\n", bflag ? "true" : "false");
-    printf("r flag: %s\n", rflag ? "true" : "false");
-    printf("u flag: %s\n", uflag ? "true" : "false");
-    printf("Length: %d\n", word_length);
+    printf("\t===== Arguments =====\n");
+    printf("\tTrovefile: %s\n", trovefile);
+    printf("\tb flag: %s\n", bflag ? "true" : "false");
+    printf("\tr flag: %s\n", rflag ? "true" : "false");
+    printf("\tu flag: %s\n", uflag ? "true" : "false");
+    printf("\tLength: %d\n", word_length);
     argc -= optind;
     argv += optind;
     if (bflag)
     {
-        // Calls the function on build.c
-        build_file(argv, trovefile, argc);
+        HASHTABLE *hashtable = build_file(argv, argc, NULL);
+        write_to_file(trovefile, hashtable);
     }
     else if (uflag)
     {
-        // Calls the function on update.c
-        update_file();
+        HASHTABLE *hashtable = remove_file(trovefile, argv, argc);
+        hashtable = build_file(argv, argc, hashtable);
+        write_to_file(trovefile, hashtable);
     }
     else if (rflag)
     {
-        // Calls the function on remove.c
-        // FILE *trove = get_file(trovefile);
-        remove_file(trovefile, argv, argc);
+        HASHTABLE *hashtable = remove_file(trovefile, argv, argc);
+        write_to_file(trovefile, hashtable);
     }
     else
     {
-        // FILE *trove = get_file(trovefile);
-        // printf("Searching for: %s \n", argv[0]);
         find_word(trovefile, argv[0]);
     }
     exit(EXIT_SUCCESS);
