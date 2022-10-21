@@ -109,6 +109,7 @@ void parse_file(char *fname, char *path, HASHTABLE *hashtable)
             window = word;
         }
     }
+    fclose(fp);
     printf("\tFound %i words\n", word_count);
     word_count = 0;
 }
