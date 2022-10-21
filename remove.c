@@ -1,7 +1,6 @@
 #include "globals.h"
 #include "trovelib.h"
 
-
 void remove_path(HASHTABLE *hashtable, char *path)
 {
   char basepath[PATH_MAX];
@@ -12,7 +11,7 @@ void remove_path(HASHTABLE *hashtable, char *path)
     HEAD_LINK *curr_head = hashtable[i];
     while (curr_head != NULL)
     {
-      LINK *links = hashtable[i]->link_to_paths;
+      LINK *links = curr_head->link_to_paths;
 
       while (links != NULL)
       {
