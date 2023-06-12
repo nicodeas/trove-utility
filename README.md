@@ -49,7 +49,7 @@ Trove was the second project of the Systems Programming unit in semester 2 2022.
 
 ## Data Structure
 
-An illustration of the choice of datastructure can be found in `trove-datastructure.txt`. Initially, a linked list was used however the use of hashtables provided an enourmous gain in performance; the linked list version took ~ 20 mins to index a downloads directory, as compared to ~ 10 seconds of a hashtable.
+An illustration of the choice of datastructure can be found in `trove-datastructure.txt`. Initially, a linked list was used however the use of hashtables provided an enourmous gain in performance; the linked list version took ~ 20 minutes to index a downloads directory, as compared to ~ 10 seconds of a hashtable.
 
 ## Sample data
 
