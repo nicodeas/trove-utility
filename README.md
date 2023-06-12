@@ -42,3 +42,15 @@ Note that the files to be indexed can be of any type, including text files, exec
 - `-l length`: Only words with a length of at least the indicated value will be added to the trove-file. The length must be a positive integer. If the `-l` option is not provided, the default length is 4.
 - `-r`: If any of the files from the `filelist` are present in the trove-file, remove all their information from the trove-file.
 - `-u` Update the trove-file with the contents of all files in the `filelist`. If any of the files information already exists in the trove-file, the old information is first removed.
+
+## Sandbox
+
+Trove was the second project of the Systems Programming unit in semester 2 2022. Though messy, the `sandbox` directory contains experimental code and proof of concepts that were helpful with learning concepts necessary for the project.
+
+## Data Structure
+
+An illustration of the choice of datastructure can be found in `trove-datastructure.txt`. Initially, a linked list was used however the use of hashtables provided an enourmous gain in performance; the linked list version took ~ 20 mins to index a downloads directory, as compared to ~ 10 seconds of a hashtable.
+
+## Sample data
+
+The `trove-sample-data` directory contains sample data to test trove
