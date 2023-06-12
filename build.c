@@ -1,5 +1,4 @@
-#include "globals.h"
-#include "trovelib.h"
+#include "trove.h"
 
 int word_length;
 int unique_file_count;

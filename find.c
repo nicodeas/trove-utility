@@ -1,5 +1,4 @@
-#include "globals.h"
-#include "trovelib.h"
+#include "trove.h"
 
 // Reads trove file into memory
 void find_word(char *trovefile, char *word) {

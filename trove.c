@@ -1,5 +1,4 @@
-#include "globals.h"
-#include "trovelib.h"
+#include "trove.h"
 
 #define OPTIONLIST "f:brul:"
 
