@@ -19,16 +19,16 @@ Popular operating systems like macOS provide utilities such as Spotlight to inde
 
 This lists the absolute pathnames of files containing a specified word.
 
-```sh
-./trove [-f trovefile] word
+```
+./trove [ -f trovefile ] word
 ```
 
 ### Building, Removing, or Updating Index
 
 This allows for building a new index, removing information from an existing index, or updating an existing index.
 
-```sh
-./trove [-f trovefile] [-b | -r | -u] [-l length] filelist
+```
+./trove [-f trovefile] [ -b | -r | -u ] [-l length] filelist
 ```
 
 The `filelist` is a sequence of one or more filenames or directory names. Trove indexes the contents of each named file and traverses each named directory (including subdirectories) to locate files for indexing.
